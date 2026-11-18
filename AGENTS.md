@@ -1,0 +1,97 @@
+# LiliaPulse Agent 指南
+
+跨平台桌面应用（Tauri 2 + Rust + Angular）。桌面应用，不为浏览器单独降级。
+
+## 读文件
+
+读多少由任务决定，不由文件大小决定。
+
+Grep / Glob 定位 → 再 Read。按下方「任务入口」定点读；禁止全仓 explore、整目录 Read、全仓 subagent，或一次串读前端 + tauri 全链路。大范围探查（多文件、一条链路）交给 subagent，主上下文只收结论。
+
+- **评审改动**：读改动本身（`git diff` 或改动处），不整读文件 —— 未改动的部分不是评审对象。
+- **评审整体设计 / 可读性**：整读目标文件（或整套模块）再下结论。
+- 提问没点明范围时（「你觉得怎么样」）：按最小够用读，并说明读了什么范围。
+
+理由：`read` 不受 spill 保护（上限 `readLimit` 2000 行 / `readMaxBytes` 51200 字节），读进来的内容此后每轮都要重发。
+
+## 代码导航
+
+文件不存在时按此路径新增，不要另起一套目录。空目录不预先创建。
+
+| 层级 | 路径 |
+|------|------|
+| 路由 / 页面 | `src/app/`（页面组件、路由） |
+| 可复用 UI | `src/app/shared/` 或域内 `components/` |
+| 桌面 IO 封装 | `src/app/lib/tauri/`（唯一裸 `invoke` 出口） |
+| 纯函数 | `src/app/utils/`（无 I/O，不依赖 Tauri / DOM） |
+| 共享类型 | `src/app/types/` |
+| Rust 命令 | `src-tauri/src/` |
+| 单测 | `tests/` 镜像源码结构；**不**在 `src/` 内 co-locate |
+
+- **耗时工作优先放 Rust**（阻塞池 / async command + 前端 loading）：不卡 WebView 主线程。轻量、强交互仍留前端。
+
+## 任务入口
+
+引用一律用仓库根全路径。
+
+| 任务 | 先读 |
+|------|------|
+| 开发命令 / 约定 | `AGENTS.md`、`README.md` |
+| 新功能 / 需求未清 | `.cursor/skills/requirements-audit/SKILL.md`（先讨论；定稿可落 `.scratch/requirements/`） |
+| 桌面能力 / 窗口 | `src-tauri/tauri.conf.json`、`src-tauri/tauri.dev.conf.json` |
+| 打开 / 保存 / invoke | `src/app/lib/tauri/`，再进 `src-tauri/src/` |
+| 发布流程 | `.github/workflows/release.yml`、`CHANGELOG.md` |
+| 纯函数单测 | `tests/` 里与源文件对应的用例 |
+
+## 命令与环境
+
+- 沙箱只放行工作区写入：pnpm 加 `COREPACK_HOME` 到临时目录，dprint 加 `DPRINT_CACHE_DIR`（默认缓存目录可能被拦）；Windows 可用 `%LOCALAPPDATA%\Temp\…` 等价路径
+- 命令：`pnpm format`、`pnpm lint`、`pnpm tauri dev`、`pnpm tauri build`
+- dprint 插件用 `node_modules` 里的 wasm（见 `dprint.json`）。Windows 上 `npm:@dprint/...` 会因路径里的 `:` 解析失败，不要改回
+- `pnpm tauri` 走 `scripts/tauri.mjs`：`dev` 时合并 `tauri.dev.conf.json`，与安装版隔离 identifier / 应用数据
+- 边界：签名密钥和系统 WebView 依赖由用户自己装；代理只跑上面列出的命令
+
+### 改完验收
+
+每轮改完业务代码（含样式 / i18n / Rust 命令等），在收工前必须：
+
+1. `pnpm format`
+2. `pnpm lint`（失败则修好再结束；不要留给用户）
+3. 若动了纯函数或其测试：跑对应测试命令
+
+纯问答、只改文档（如仅 `AGENTS.md`）且无代码变动时，可不跑上述命令。
+
+## 分层
+
+| 层级 | 职责 | 禁止 |
+|------|------|------|
+| 共用 UI | 纯展示 | `invoke`、调 `lib/tauri` |
+| 页面 / 服务 | 编排与域逻辑；IO 只经 `lib/tauri` | 裸 `invoke` |
+| `src/app/lib/tauri/` | invoke 封装 | 业务分支、渲染 |
+| Rust 命令 | 文件 IO、耗时计算；可加 loading | 碰 UI |
+
+## 代码风格
+
+- 格式：`dprint.json`。改完跑 format / lint，见上方「改完验收」。冲突时可读性优先。
+- **可读性优先于防御性**：难读比偶发错误更糟。不为「万一」加多余分支、mirror state、双重解析、重复校验；边界校验只放在真正边界（Tauri 命令、文件对话框、外部路径），内层信任上游。能用类型、命名、单测表达的，不用运行时 `if` 堆砌。
+- 用户对代码风格 / 实现提出异议或质疑时：优先对照社区主流做法与共识强弱来评估，再说明本仓库现有约定。不要默认维护现状或只给个人偏好；本仓与社区冲突时先讲清差异，再让用户决定跟谁。
+
+细则：
+
+- 优先 ES2015+（async/await、解构、可选链等）
+- `import type`；数组写 `T[]`
+- 可选字段扁平：`key: value | undefined`；勿 `...(cond ? { key } : {})`
+- 默认值用 `??`；布尔组合或空串也要 fallback 时用 `||`
+- `src/app/lib/tauri/`、纯工具函数的 export 补简短中文 JSDoc
+- 列表：`map` / `filter` / `reduce` / `flatMap`；顺序副作用或 `await` → `for...of`；禁用 `for...in`、破坏性 `sort` / `reverse` / `splice`（用 `toSorted` 等 / `.at()`）
+- **拆分与分段 banner**：先判断拆不拆，banner 不替代拆分。有独立职责/复用/嵌套过深 → 抽组件、服务或域内模块；只出现一次且拆了更难读、或「将来可能复用」的提前拆 → 不拆。仍合在一处且偏长（约 ≥100～150 行或多段逻辑）→ 加 banner；短文件、单线薄封装不加。格式：
+
+```
+/* -------------------------------------------------------------------------- */
+/* Section name                                                               */
+/* -------------------------------------------------------------------------- */
+```
+
+## 测试
+
+改纯函数：同步更新 `tests/` 对应用例。依赖系统 WebView 或真实文件系统的路径不强制 E2E。
