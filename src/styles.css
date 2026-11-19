@@ -1,1 +1,30 @@
-/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+@import "./theme/app.css";
+
+@theme {
+  --font-sans: "Segoe UI", "PingFang SC", "Noto Sans SC", ui-sans-serif, system-ui,
+    sans-serif;
+}
+
+@layer base {
+  html,
+  body {
+    @apply m-0 min-h-full;
+    background: transparent;
+  }
+
+  body {
+    @apply overflow-hidden antialiased;
+    color: var(--app-fg);
+    font-family: var(--font-sans);
+  }
+}
+
+/* 监视浮窗：Win 近实底；mac 淡底露出 vibrancy */
+.monitor-shell {
+  background: color-mix(in srgb, var(--app-bg) 96%, transparent);
+}
+
+:root[data-platform="mac"] .monitor-shell {
+  background: color-mix(in srgb, var(--app-bg) 22%, transparent);
+}

@@ -1,10 +1,15 @@
-// Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-use tauri::Manager;
+//! LiliaKit 桌面端：命令注册、托盘与多窗生命周期。
 
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
+mod metrics;
+mod tools;
+mod tray;
+mod window_chrome;
+
+use metrics::{MetricsState, get_system_metrics};
+use tauri::Manager;
+use tools::{
+    MAIN_LABEL, MONITOR_LABEL, ToolsState, get_tools_state, open_enabled_tools, set_monitor_enabled,
+};
 
 /// 屏蔽 WebView 浏览器默认快捷键（Ctrl+P 等在 Win 上不会进到 JS）。
 fn prevent_default_plugin() -> tauri::plugin::TauriPlugin<tauri::Wry> {
@@ -32,16 +37,51 @@ pub fn run() {
     #[cfg(desktop)]
     {
         builder = builder.plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
-            if let Some(window) = app.get_webview_window("main") {
-                let _ = window.set_focus();
-            }
+            tray::show_main_window(app);
         }));
     }
 
     builder
         .plugin(tauri_plugin_opener::init())
         .plugin(prevent_default_plugin())
-        .invoke_handler(tauri::generate_handler![greet])
+        .manage(MetricsState::new())
+        // 默认打开监视器，保留原先「一开就有浮窗」的体验
+        .manage(ToolsState::new(true))
+        .invoke_handler(tauri::generate_handler![
+            get_system_metrics,
+            get_tools_state,
+            set_monitor_enabled,
+        ])
+        .on_window_event(|window, event| match event {
+            tauri::WindowEvent::CloseRequested { api, .. } => {
+                if window.label() == MAIN_LABEL {
+                    // 主窗 X → 进托盘；真正退出走托盘「退出」
+                    api.prevent_close();
+                    let _ = window.hide();
+                }
+                // 工具窗允许关闭（销毁）；开关由 Destroyed 回写
+            }
+            tauri::WindowEvent::Destroyed => {
+                if window.label() == MONITOR_LABEL {
+                    let app = window.app_handle().clone();
+                    if let Some(state) = app.try_state::<ToolsState>() {
+                        tools::on_monitor_destroyed(&app, state.inner());
+                    }
+                }
+            }
+            _ => {}
+        })
+        .setup(|app| {
+            #[cfg(target_os = "macos")]
+            {
+                app.set_activation_policy(tauri::ActivationPolicy::Accessory);
+            }
+
+            tray::setup(app.handle())?;
+            let tools = app.state::<ToolsState>();
+            open_enabled_tools(app.handle(), tools.inner())?;
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

@@ -1,0 +1,24 @@
+---
+description: 禁止用 Shell 写业务源码；只用编辑工具改仓库文件
+alwaysApply: true
+---
+
+# 禁止 Shell 写业务源码
+
+写/改业务与配置源码时，**只用** Cursor 编辑工具（`Write`、`StrReplace` 等）。
+
+## 禁止
+
+用 Shell 向仓库写入源码内容，例如：
+
+- `[System.IO.File]::WriteAllText(...)`
+- `Set-Content` / `Out-File` / `Add-Content` 写 `.ts` `.rs` `.html` `.css` `.json` `.toml` 等
+- `echo` / heredoc / `cat <<EOF` 重定向生成业务文件
+
+## 允许
+
+Shell 只做运行与检查，例如：`pnpm`、`cargo`、`git`、只读查看、安装依赖。
+
+## 例外
+
+用户**明确要求**用某条 shell 命令生成文件时才可例外；默认仍优先编辑工具。

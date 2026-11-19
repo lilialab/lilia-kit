@@ -1,4 +1,4 @@
-# LiliaPulse Agent 指南
+# LiliaKit Agent 指南
 
 跨平台桌面应用（Tauri 2 + Rust + Angular）。桌面应用，不为浏览器单独降级。
 
@@ -49,6 +49,7 @@ Grep / Glob 定位 → 再 Read。按下方「任务入口」定点读；禁止�
 - 命令：`pnpm format`、`pnpm lint`、`pnpm tauri dev`、`pnpm tauri build`
 - dprint 插件用 `node_modules` 里的 wasm（见 `dprint.json`）。Windows 上 `npm:@dprint/...` 会因路径里的 `:` 解析失败，不要改回
 - `pnpm tauri` 走 `scripts/tauri.mjs`：`dev` 时合并 `tauri.dev.conf.json`，与安装版隔离 identifier / 应用数据
+- **禁止用 Shell 写业务源码**（勿 `WriteAllText` / `Set-Content` / heredoc 重定向生成 `.ts` `.rs` 等）；改文件只用编辑工具。详见 `.cursor/rules/no-shell-source-writes.mdc`
 - 边界：签名密钥和系统 WebView 依赖由用户自己装；代理只跑上面列出的命令
 
 ### 改完验收

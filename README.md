@@ -1,6 +1,6 @@
-# LiliaPulse
+# LiliaKit
 
-Tauri 2 + Angular 桌面应用。
+Tauri 2 + Angular 桌面工具箱（系统监视等）。
 
 ## 推荐 IDE
 
@@ -12,7 +12,7 @@ Tauri 2 + Angular 桌面应用。
 
 ```bash
 pnpm install
-pnpm tauri dev    # 开发（与安装版隔离为 LiliaPulse Dev）
+pnpm tauri dev    # 开发（与安装版隔离为 LiliaKit Dev）
 pnpm tauri build  # 打安装包
 ```
 
@@ -20,7 +20,8 @@ pnpm tauri build  # 打安装包
 
 - `pnpm format` — dprint
 - `pnpm lint` — ESLint
-- `pnpm start` — 仅跑 Angular（浏览器）
+- `pnpm start` — 仅前端（给 `tauri dev` 的 beforeDevCommand 用，不是产品运行方式）
+- 样式：Tailwind v4 + Catppuccin Macchiato（`src/theme/`，语义色 `--app-*`）
 
 推送 `v*` tag 后由 [`.github/workflows/release.yml`](.github/workflows/release.yml) 打多平台 Draft Release。变更记在 [`CHANGELOG.md`](CHANGELOG.md)。
 

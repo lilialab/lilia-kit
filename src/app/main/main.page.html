@@ -1,0 +1,80 @@
+<main class="flex min-h-screen flex-col gap-5 bg-(--app-bg) px-5 py-5 text-(--app-fg)">
+  <header>
+    <h1 class="text-xl font-semibold tracking-tight">LiliaKit</h1>
+    <p class="mt-1 text-sm text-(--app-muted)">选择要启用的工具</p>
+  </header>
+
+  @if (error(); as message) {
+    <p class="text-sm text-(--app-danger)" role="alert">{{ message }}</p>
+  }
+
+  @if (ready()) {
+    <ul class="m-0 flex list-none flex-col gap-2 p-0">
+      <li
+        class="flex items-center justify-between gap-4 rounded-xl bg-(--app-surface) px-3.5 py-3 ring-1 ring-(--app-border)"
+      >
+        <div class="min-w-0">
+          <div class="text-sm font-semibold tracking-tight">监视器</div>
+          <div class="text-xs text-(--app-muted)">系统资源浮窗</div>
+        </div>
+        <button
+          type="button"
+          class="relative h-6 w-10 shrink-0 cursor-pointer rounded-full transition-colors"
+          role="switch"
+          [attr.aria-checked]="monitorEnabled()"
+          [style.background-color]="monitorEnabled() ? 'var(--app-accent)' : 'var(--app-switch-off)'"
+          (click)="toggleMonitor()"
+        >
+          <span
+            class="absolute top-0.5 left-0.5 size-5 rounded-full bg-(--app-knob) shadow transition-transform"
+            [class.translate-x-4]="monitorEnabled()"
+          ></span>
+        </button>
+      </li>
+
+      <li
+        class="flex items-center justify-between gap-4 rounded-xl bg-(--app-surface) px-3.5 py-3 ring-1 ring-(--app-border)"
+        [class.opacity-70]="!screenshotAvailable()"
+      >
+        <div class="min-w-0">
+          <div class="text-sm font-semibold tracking-tight">截图</div>
+          <div class="min-h-4 text-xs text-(--app-muted)">即将推出</div>
+        </div>
+        <button
+          type="button"
+          class="relative h-6 w-10 shrink-0 cursor-not-allowed rounded-full bg-(--app-switch-off) transition-colors"
+          role="switch"
+          aria-checked="false"
+          disabled
+        >
+          <span
+            class="absolute top-0.5 left-0.5 size-5 rounded-full bg-(--app-knob) shadow transition-transform"
+          ></span>
+        </button>
+      </li>
+
+      <li
+        class="flex items-center justify-between gap-4 rounded-xl bg-(--app-surface) px-3.5 py-3 ring-1 ring-(--app-border)"
+        [class.opacity-70]="!clipboardAvailable()"
+      >
+        <div class="min-w-0">
+          <div class="text-sm font-semibold tracking-tight">剪切板历史</div>
+          <div class="min-h-4 text-xs text-(--app-muted)">即将推出</div>
+        </div>
+        <button
+          type="button"
+          class="relative h-6 w-10 shrink-0 cursor-not-allowed rounded-full bg-(--app-switch-off) transition-colors"
+          role="switch"
+          aria-checked="false"
+          disabled
+        >
+          <span
+            class="absolute top-0.5 left-0.5 size-5 rounded-full bg-(--app-knob) shadow transition-transform"
+          ></span>
+        </button>
+      </li>
+    </ul>
+  } @else {
+    <p class="text-sm text-(--app-muted)">加载中…</p>
+  }
+</main>

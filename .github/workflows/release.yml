@@ -69,7 +69,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: v__VERSION__
-          releaseName: LiliaPulse v__VERSION__
+          releaseName: LiliaKit v__VERSION__
           releaseBody: |
             下载下方 Assets 安装对应平台包。
 

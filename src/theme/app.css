@@ -1,0 +1,16 @@
+@import "./catppuccin.css";
+
+/* 应用语义；模板读 --app-*，不直接写 hex / slate */
+:root {
+  --app-bg: var(--ctp-base);
+  --app-bg-raised: var(--ctp-mantle);
+  --app-fg: var(--ctp-text);
+  --app-muted: var(--ctp-subtext0);
+  --app-border: var(--ctp-surface1);
+  --app-surface: var(--ctp-surface0);
+  --app-surface-hover: var(--ctp-surface1);
+  --app-accent: var(--ctp-green);
+  --app-danger: var(--ctp-red);
+  --app-switch-off: var(--ctp-surface2);
+  --app-knob: var(--ctp-text);
+}

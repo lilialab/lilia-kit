@@ -1,11 +1,21 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "LiliaPulse Dev",
-  "identifier": "com.lilialab.liliapulse.dev",
+  "productName": "LiliaKit Dev",
+  "identifier": "com.lilialab.liliakit.dev",
   "app": {
     "windows": [
       {
-        "title": "LiliaPulse Dev"
+        "label": "main",
+        "title": "LiliaKit Dev",
+        "width": 360,
+        "height": 440,
+        "resizable": true,
+        "decorations": true,
+        "transparent": false,
+        "alwaysOnTop": false,
+        "skipTaskbar": false,
+        "visible": true,
+        "dragDropEnabled": false
       }
     ]
   }

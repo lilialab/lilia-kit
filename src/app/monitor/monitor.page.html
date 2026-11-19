@@ -1,0 +1,53 @@
+<main
+  class="monitor-shell flex min-h-screen flex-col gap-3.5 overflow-hidden px-4 py-3.5 text-(--app-fg)"
+>
+  <header
+    class="flex cursor-grab items-start justify-between gap-3 select-none active:cursor-grabbing"
+    data-tauri-drag-region
+  >
+    <div>
+      <h1 class="m-0 text-[1.35rem] leading-tight font-semibold tracking-tight">监视器</h1>
+      <p class="mt-0.5 text-xs text-(--app-muted)">系统资源</p>
+    </div>
+    <p class="mt-0.5 text-[0.7rem] whitespace-nowrap text-(--app-muted)">拖动移动</p>
+  </header>
+
+  @if (error(); as message) {
+    <p class="m-0 text-sm text-(--app-danger)" role="alert">{{ message }}</p>
+  }
+
+  @if (metrics(); as m) {
+    <section class="grid gap-2.5" aria-live="polite">
+      <div class="flex flex-col gap-0.5">
+        <span class="text-[0.68rem] tracking-wider text-(--app-muted) uppercase">CPU</span>
+        <span class="text-lg leading-snug font-semibold tracking-tight tabular-nums">{{ cpuLabel(m) }}</span>
+      </div>
+      <div class="flex flex-col gap-0.5">
+        <span class="text-[0.68rem] tracking-wider text-(--app-muted) uppercase">内存</span>
+        <span class="text-lg leading-snug font-semibold tracking-tight tabular-nums">{{ memoryLabel(m) }}</span>
+      </div>
+      <div class="flex flex-col gap-0.5">
+        <span class="text-[0.68rem] tracking-wider text-(--app-muted) uppercase">网速</span>
+        <span class="text-lg leading-snug font-semibold tracking-tight tabular-nums">{{ networkLabel(m) }}</span>
+      </div>
+    </section>
+
+    <section class="flex min-h-0 flex-1 flex-col">
+      <h2 class="mb-1.5 text-sm font-semibold tracking-tight">温度</h2>
+      @if (m.temperatures.length === 0) {
+        <p class="m-0 text-xs text-(--app-muted)">暂无温度传感器</p>
+      } @else {
+        <ul class="m-0 grid max-h-36 list-none gap-1.5 overflow-auto p-0">
+          @for (temp of m.temperatures; track temp.label) {
+            <li class="grid gap-0.5">
+              <span class="truncate text-sm font-semibold">{{ temp.label }}</span>
+              <span class="text-xs text-(--app-muted) tabular-nums">{{ temperatureLabel(temp) }}</span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  } @else if (!error()) {
+    <p class="m-0 text-xs text-(--app-muted)">读取中…</p>
+  }
+</main>

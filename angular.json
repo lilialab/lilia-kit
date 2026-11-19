@@ -7,7 +7,7 @@
     "schematicCollections": ["angular-eslint"]
   },
   "projects": {
-    "lilia-pulse": {
+    "lilia-kit": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -68,10 +68,10 @@
           },
           "configurations": {
             "production": {
-              "buildTarget": "lilia-pulse:build:production"
+              "buildTarget": "lilia-kit:build:production"
             },
             "development": {
-              "buildTarget": "lilia-pulse:build:development"
+              "buildTarget": "lilia-kit:build:development"
             }
           },
           "defaultConfiguration": "development"
