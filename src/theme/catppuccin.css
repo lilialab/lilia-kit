@@ -1,4 +1,4 @@
-/* 固定 Catppuccin Macchiato（与 LiliaMark 同风味）；--ctp-* 供语义层引用 */
+/* 固定 Catppuccin Macchiato；--ctp-* 供语义层引用 */
 @import "@catppuccin/palette/css/catppuccin.css";
 
 :root {

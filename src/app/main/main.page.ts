@@ -18,6 +18,7 @@ export class MainPage {
   readonly clipboardAvailable = signal(false);
   readonly error = signal<string | null>(null);
   readonly ready = signal(false);
+  readonly busy = signal(false);
 
   constructor() {
     void getToolsState()
@@ -36,6 +37,10 @@ export class MainPage {
   }
 
   async toggleMonitor(): Promise<void> {
+    if (this.busy()) {
+      return;
+    }
+    this.busy.set(true);
     const next = !this.monitorEnabled();
     this.error.set(null);
     try {
@@ -43,6 +48,8 @@ export class MainPage {
       this.monitorEnabled.set(next);
     } catch (err: unknown) {
       this.error.set(formatError(err));
+    } finally {
+      this.busy.set(false);
     }
   }
 

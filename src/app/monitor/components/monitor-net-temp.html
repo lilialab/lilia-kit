@@ -1,0 +1,33 @@
+<div class="flex items-center justify-between gap-2 text-[0.7rem] tabular-nums">
+  <div class="flex min-w-0 items-center gap-2 text-(--app-muted)">
+    <svg
+      lucideNetwork
+      class="shrink-0"
+      [size]="categoryIconSize"
+      [strokeWidth]="2"
+    ></svg>
+    <p class="m-0 flex min-w-0 items-center gap-2">
+      <span class="inline-flex items-center gap-0.5">
+        <svg lucideArrowDown [size]="rateIconSize" [strokeWidth]="2"></svg>
+        {{ rxLabel() }}
+      </span>
+      <span class="inline-flex items-center gap-0.5">
+        <svg lucideArrowUp [size]="rateIconSize" [strokeWidth]="2"></svg>
+        {{ txLabel() }}
+      </span>
+    </p>
+  </div>
+
+  <div
+    class="inline-flex shrink-0 items-center gap-1 transition-colors duration-200 ease-out"
+    [style.color]="tempColor()"
+  >
+    <svg
+      lucideThermometer
+      class="shrink-0"
+      [size]="categoryIconSize"
+      [strokeWidth]="2"
+    ></svg>
+    <span class="font-medium" [attr.title]="hottest()?.label">{{ tempLabel() }}</span>
+  </div>
+</div>

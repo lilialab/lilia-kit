@@ -1,11 +1,14 @@
 //! LiliaKit 桌面端：命令注册、托盘与多窗生命周期。
 
+mod hotkeys;
 mod metrics;
+mod settings;
 mod tools;
 mod tray;
 mod window_chrome;
 
 use metrics::{MetricsState, get_system_metrics};
+use settings::{default_app_settings, load_app_settings, save_app_settings};
 use tauri::Manager;
 use tools::{
     MAIN_LABEL, MONITOR_LABEL, ToolsState, get_tools_state, open_enabled_tools, set_monitor_enabled,
@@ -36,9 +39,19 @@ pub fn run() {
 
     #[cfg(desktop)]
     {
-        builder = builder.plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
-            tray::show_main_window(app);
-        }));
+        use tauri_plugin_window_state::StateFlags;
+
+        builder = builder
+            .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+                tray::show_main_window(app);
+            }))
+            .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+            .plugin(
+                tauri_plugin_window_state::Builder::new()
+                    // 只记位置/尺寸；可见性由工具开关管，避免和主窗托盘显隐打架
+                    .with_state_flags(StateFlags::POSITION | StateFlags::SIZE)
+                    .build(),
+            );
     }
 
     builder
@@ -51,6 +64,9 @@ pub fn run() {
             get_system_metrics,
             get_tools_state,
             set_monitor_enabled,
+            load_app_settings,
+            save_app_settings,
+            default_app_settings,
         ])
         .on_window_event(|window, event| match event {
             tauri::WindowEvent::CloseRequested { api, .. } => {
@@ -77,9 +93,16 @@ pub fn run() {
                 app.set_activation_policy(tauri::ActivationPolicy::Accessory);
             }
 
+            // 启动时合并写回 settings.json，便于后续设置页直接改
+            let _ = settings::read_app_settings(app.handle());
+
             tray::setup(app.handle())?;
             let tools = app.state::<ToolsState>();
             open_enabled_tools(app.handle(), tools.inner())?;
+
+            #[cfg(desktop)]
+            hotkeys::setup(app.handle());
+
             Ok(())
         })
         .run(tauri::generate_context!())

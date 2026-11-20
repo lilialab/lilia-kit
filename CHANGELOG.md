@@ -6,6 +6,11 @@
 
 - 产品更名为 LiliaKit（原 LiliaPulse）；包名 / identifier / 文案同步
 - 主窗改为工具开关面板；监视器拆为独立浮窗（可由主窗开关）
+- 监视浮窗改为紧凑长条（CPU/内存进度条 + 网速/最高温并排，Lucide 图标）；固定约 220×78，不可拉伸/最大化
+- 指标负荷五档色（idle/ok/busy/hot/critical），利用率与温度分阈值表
+- 全局快捷键 Win+Alt+M（Mac：⌘+⌥+M）：切换监视器开/关；注册失败（已被占用）不阻断启动；后续截图快捷键同此模块
+- 监视器快切开/关：串行销毁/重建，避免 `failed to acquire webview reference`
+- 应用设置骨架（`settings.json`）：当前含 `monitorPinned`（默认置顶）；窗位置/尺寸由 `tauri-plugin-window-state` 记忆
 
 ### Added
 
@@ -24,4 +29,4 @@
 
 ### Notes
 
-- 初始脚手架：Tauri 2 + Angular；开发约定对齐 LiliaMark 工具链习惯
+- 初始脚手架：Tauri 2 + Angular

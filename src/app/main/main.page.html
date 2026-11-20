@@ -19,9 +19,14 @@
         </div>
         <button
           type="button"
-          class="relative h-6 w-10 shrink-0 cursor-pointer rounded-full transition-colors"
+          class="relative h-6 w-10 shrink-0 rounded-full transition-colors"
+          [class.cursor-pointer]="!busy()"
+          [class.cursor-not-allowed]="busy()"
+          [class.opacity-70]="busy()"
           role="switch"
           [attr.aria-checked]="monitorEnabled()"
+          [attr.aria-busy]="busy()"
+          [disabled]="busy()"
           [style.background-color]="monitorEnabled() ? 'var(--app-accent)' : 'var(--app-switch-off)'"
           (click)="toggleMonitor()"
         >
