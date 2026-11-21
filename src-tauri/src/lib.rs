@@ -12,7 +12,9 @@ use commands::metrics::get_system_metrics;
 use commands::settings::{default_app_settings, load_app_settings, read_app_settings};
 use metrics::MetricsState;
 use tauri::Manager;
-use tools::{ToolId, ToolsState, open_enabled_tools, save_app_settings};
+use tools::{
+    ToolId, ToolsState, open_enabled_tools, save_app_settings, set_monitor_window_visible,
+};
 use window_labels::{MAIN, MONITOR};
 
 /// 屏蔽 WebView 浏览器默认快捷键（Ctrl+P 等在 Win 上不会进到 JS）。
@@ -67,6 +69,7 @@ pub fn run() {
             load_app_settings,
             save_app_settings,
             default_app_settings,
+            set_monitor_window_visible,
         ])
         .on_window_event(|window, event| match event {
             tauri::WindowEvent::CloseRequested { api, .. } => {

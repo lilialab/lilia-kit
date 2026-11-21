@@ -13,6 +13,7 @@
 - 监视浮窗改为紧凑长条（CPU/内存进度条 + 网速/最高温并排，Lucide 图标）；固定约 220×78，不可拉伸/最大化
 - 指标负荷五档色（idle/ok/busy/hot/critical），利用率与温度分阈值表
 - 全局快捷键 Win+Alt+.（Mac：⌘+⌥+.）：已启用时切换监视器显隐；注册失败不阻断启动；后续截图快捷键同此模块
+- 监视器显隐：热键只发 `monitor-toggle`；前端淡入淡出后再 `set_monitor_window_visible`（对齐系统 hide/show 不对称）
 - 监视器快切开/关：串行销毁/重建，避免 `failed to acquire webview reference`
 - 应用设置骨架（`settings.json` 按工具分组，缺省深合并）：`monitor.enabled` / `pinned` / `showTemperature`；窗位置/尺寸由 `tauri-plugin-window-state` 记忆
 

@@ -52,6 +52,16 @@ impl ToolsState {
     }
 }
 
+/// 前端请求监视窗 OS 显隐（热键不直接调此路径）。
+#[tauri::command]
+pub async fn set_monitor_window_visible(
+    app: AppHandle,
+    state: State<'_, ToolsState>,
+    visible: bool,
+) -> Result<(), String> {
+    monitor::set_window_visible(&app, &state, visible)
+}
+
 /// 保存应用设置：按 settings apply 运行态后写盘，并回推完整文档。
 ///
 /// `async`：避免在同步 command 里建窗与主事件循环死锁。
@@ -98,7 +108,7 @@ pub fn open_enabled_tools<R: Runtime>(
     Ok(())
 }
 
-/// 快捷键入口：切换监视器显隐。
-pub fn toggle_monitor_visibility<R: Runtime>(app: &AppHandle<R>) {
-    monitor::toggle_visibility(app);
+/// 快捷键入口：只向监视窗 emit toggle。
+pub fn emit_monitor_toggle<R: Runtime>(app: &AppHandle<R>) {
+    monitor::emit_toggle(app);
 }

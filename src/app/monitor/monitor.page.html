@@ -1,5 +1,6 @@
 <main
   class="monitor-shell relative flex h-screen flex-col justify-center gap-2 overflow-hidden px-2.5 py-2 text-(--app-fg) select-none"
+  [class.is-revealed]="revealed()"
 >
   <!-- 全窗拖拽命中层：盖住子节点，避免文字/SVG 抢走拖拽 -->
   <div class="absolute inset-0 z-10" data-tauri-drag-region></div>

@@ -18,4 +18,15 @@
   --app-tone-critical: var(--ctp-red);
   --app-warn: var(--app-tone-busy);
   --app-danger: var(--app-tone-critical);
+  --monitor-fade-ms: 180ms;
+}
+
+/* 监视浮窗：显隐由前端 opacity 对齐，结束后再 confirm hide */
+.monitor-shell {
+  opacity: 0;
+  transition: opacity var(--monitor-fade-ms) ease-out;
+}
+
+.monitor-shell.is-revealed {
+  opacity: 1;
 }

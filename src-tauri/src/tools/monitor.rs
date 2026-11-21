@@ -1,13 +1,17 @@
-//! 监视器浮窗：开/关、显隐、销毁回写。
+//! 监视器浮窗：开/关、显隐执行、销毁回写。
+//!
+//! 快捷键只发 `monitor-toggle`；显隐节奏由前端决定后再 invoke。
 
 use std::time::Duration;
 
-use tauri::{AppHandle, Manager, Runtime, WebviewUrl, WebviewWindowBuilder};
+use tauri::{AppHandle, Emitter, Manager, Runtime, WebviewUrl, WebviewWindowBuilder};
 
 use crate::commands::settings;
 use crate::tools::ToolsState;
 use crate::window_chrome;
 use crate::window_labels;
+
+const EVENT_MONITOR_TOGGLE: &str = "monitor-toggle";
 
 /// 按启用状态装载或卸载浮窗（持有 lifecycle 锁）。
 pub fn set_enabled<R: Runtime>(
@@ -34,31 +38,37 @@ pub fn set_enabled<R: Runtime>(
     result
 }
 
-/// 已启用时切换显隐（不改启用状态）。
-pub fn toggle_visibility<R: Runtime>(app: &AppHandle<R>) {
+/// 快捷键：仅向监视窗发 toggle 事件（未启用或无窗则忽略）。
+pub fn emit_toggle<R: Runtime>(app: &AppHandle<R>) {
     let state = app.state::<ToolsState>();
     if !state.monitor_enabled() {
         return;
     }
-
-    let Ok(_guard) = state.monitor_lifecycle.lock() else {
-        return;
-    };
-
     let Some(window) = app.get_webview_window(window_labels::MONITOR) else {
-        let _ = open(app);
         return;
     };
+    let _ = window.emit(EVENT_MONITOR_TOGGLE, ());
+}
 
-    match window.is_visible() {
-        Ok(true) => {
-            let _ = window.hide();
-        }
-        Ok(false) => {
-            let _ = window.unminimize();
-            let _ = window.show();
-        }
-        Err(_) => {}
+/// 前端请求的 OS 显隐（show 可补建窗；hide 仅隐藏）。
+pub fn set_window_visible<R: Runtime>(
+    app: &AppHandle<R>,
+    state: &ToolsState,
+    visible: bool,
+) -> Result<(), String> {
+    if !state.monitor_enabled() {
+        return Ok(());
+    }
+
+    let _guard = state
+        .monitor_lifecycle
+        .lock()
+        .map_err(|_| "tools state poisoned".to_string())?;
+
+    if visible {
+        open(app).map_err(|err| err.to_string())
+    } else {
+        hide(app)
     }
 }
 
@@ -107,22 +117,29 @@ fn open<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
         window_labels::MONITOR,
         WebviewUrl::App("index.html".into()),
     )
-        .title("监视器")
-        .inner_size(220.0, 78.0)
-        .resizable(false)
-        .maximizable(false)
-        .decorations(false)
-        .transparent(true)
-        .always_on_top(pinned)
-        .skip_taskbar(true)
-        .shadow(false)
-        .drag_and_drop(false)
-        .no_redirection_bitmap(true)
-        .visible(true)
-        .build()?;
+    .title("监视器")
+    .inner_size(220.0, 78.0)
+    .resizable(false)
+    .maximizable(false)
+    .decorations(false)
+    .transparent(true)
+    .always_on_top(pinned)
+    .skip_taskbar(true)
+    .shadow(false)
+    .drag_and_drop(false)
+    .no_redirection_bitmap(true)
+    .visible(true)
+    .build()?;
 
     window_chrome::apply_to(&window);
     Ok(())
+}
+
+fn hide<R: Runtime>(app: &AppHandle<R>) -> Result<(), String> {
+    let Some(window) = app.get_webview_window(window_labels::MONITOR) else {
+        return Ok(());
+    };
+    window.hide().map_err(|err| err.to_string())
 }
 
 fn destroy<R: Runtime>(app: &AppHandle<R>) -> Result<(), String> {
