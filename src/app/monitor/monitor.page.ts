@@ -2,6 +2,7 @@ import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { LucideCpu, LucideMemoryStick } from '@lucide/angular';
 import type { SystemMetrics } from '../lib/tauri/metrics';
 import { getSystemMetrics } from '../lib/tauri/metrics';
+import { loadAppSettings, onAppSettingsChanged } from '../lib/tauri/settings';
 import { MonitorMetricBar } from './components/monitor-metric-bar';
 import { MonitorNetTemp } from './components/monitor-net-temp';
 
@@ -17,9 +18,24 @@ export class MonitorPage {
 
   readonly iconSize = 14;
   readonly metrics = signal<SystemMetrics | null>(null);
+  readonly showTemperature = signal(true);
   readonly error = signal<string | null>(null);
 
   constructor() {
+    void loadAppSettings()
+      .then((settings) => {
+        this.showTemperature.set(settings.monitor.showTemperature);
+      })
+      .catch(() => {
+        /* 设置读失败时沿用默认显示温度 */
+      });
+
+    void onAppSettingsChanged((settings) => {
+      this.showTemperature.set(settings.monitor.showTemperature);
+    }).then((unlisten) => {
+      this.destroyRef.onDestroy(unlisten);
+    });
+
     const tick = (): void => {
       void getSystemMetrics()
         .then((next) => {

@@ -1,0 +1,7 @@
+{
+  "monitor": {
+    "enabled": true,
+    "pinned": true,
+    "showTemperature": true
+  }
+}

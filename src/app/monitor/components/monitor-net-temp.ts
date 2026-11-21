@@ -19,6 +19,8 @@ export class MonitorNetTemp {
   readonly rxBytesPerSec = input.required<number>();
   readonly txBytesPerSec = input.required<number>();
   readonly temperatures = input<TemperatureMetric[]>([]);
+  /** 是否显示温度；关闭时仅保留网速 */
+  readonly showTemperature = input(true);
 
   readonly rxLabel = computed(() => formatRate(this.rxBytesPerSec()));
   readonly txLabel = computed(() => formatRate(this.txBytesPerSec()));

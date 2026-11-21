@@ -9,7 +9,7 @@
   --app-border: var(--ctp-surface1);
   --app-surface: var(--ctp-surface0);
   --app-surface-hover: var(--ctp-surface1);
-  --app-accent: var(--ctp-green);
+  --app-link: var(--ctp-blue);
   /* 指标五档：idle → ok → busy → hot → critical */
   --app-tone-idle: var(--ctp-green);
   --app-tone-ok: var(--ctp-teal);
@@ -18,6 +18,4 @@
   --app-tone-critical: var(--ctp-red);
   --app-warn: var(--app-tone-busy);
   --app-danger: var(--app-tone-critical);
-  --app-switch-off: var(--ctp-surface2);
-  --app-knob: var(--ctp-text);
 }

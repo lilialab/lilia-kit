@@ -1,0 +1,37 @@
+@if (appSettings.draft(); as settings) {
+  <h2 class="text-sm font-medium">监视器</h2>
+  <p class="mt-1 text-xs text-(--app-muted)">系统资源浮窗</p>
+
+  <label class="mt-4 flex items-center gap-2 text-sm">
+    <input
+      type="checkbox"
+      [checked]="settings.monitor.enabled"
+      [disabled]="appSettings.saving()"
+      (change)="onCheck('enabled', $event)"
+    />
+    启用
+  </label>
+  <p class="mt-2 text-xs text-(--app-muted)">打开系统资源浮窗</p>
+
+  <label class="mt-4 flex items-center gap-2 text-sm">
+    <input
+      type="checkbox"
+      [checked]="settings.monitor.pinned"
+      [disabled]="appSettings.saving()"
+      (change)="onCheck('pinned', $event)"
+    />
+    窗口置顶
+  </label>
+  <p class="mt-2 text-xs text-(--app-muted)">浮在其他窗口之上</p>
+
+  <label class="mt-4 flex items-center gap-2 text-sm">
+    <input
+      type="checkbox"
+      [checked]="settings.monitor.showTemperature"
+      [disabled]="appSettings.saving()"
+      (change)="onCheck('showTemperature', $event)"
+    />
+    显示温度
+  </label>
+  <p class="mt-2 text-xs text-(--app-muted)">浮窗右下角显示最高温度</p>
+}

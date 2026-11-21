@@ -1,85 +1,51 @@
-<main class="flex min-h-screen flex-col gap-5 bg-(--app-bg) px-5 py-5 text-(--app-fg)">
-  <header>
+<main class="flex h-screen flex-col bg-(--app-bg) text-(--app-fg)">
+  <header class="shrink-0 px-5 pt-5 pb-3">
     <h1 class="text-xl font-semibold tracking-tight">LiliaKit</h1>
-    <p class="mt-1 text-sm text-(--app-muted)">选择要启用的工具</p>
+    <p class="mt-1 text-sm text-(--app-muted)">选择工具并配置</p>
   </header>
 
-  @if (error(); as message) {
-    <p class="text-sm text-(--app-danger)" role="alert">{{ message }}</p>
+  @if (appSettings.error(); as message) {
+    <p class="shrink-0 px-5 pb-2 text-sm text-(--app-danger)" role="alert">{{ message }}</p>
   }
 
-  @if (ready()) {
-    <ul class="m-0 flex list-none flex-col gap-2 p-0">
-      <li
-        class="flex items-center justify-between gap-4 rounded-xl bg-(--app-surface) px-3.5 py-3 ring-1 ring-(--app-border)"
+  @if (appSettings.ready() && appSettings.draft()) {
+    <div class="flex min-h-0 flex-1 border-t border-(--app-border)">
+      <nav
+        class="flex w-44 shrink-0 flex-col gap-1 border-r border-(--app-border) p-2"
+        aria-label="工具"
       >
-        <div class="min-w-0">
-          <div class="text-sm font-semibold tracking-tight">监视器</div>
-          <div class="text-xs text-(--app-muted)">系统资源浮窗</div>
-        </div>
         <button
           type="button"
-          class="relative h-6 w-10 shrink-0 rounded-full transition-colors"
-          [class.cursor-pointer]="!busy()"
-          [class.cursor-not-allowed]="busy()"
-          [class.opacity-70]="busy()"
-          role="switch"
-          [attr.aria-checked]="monitorEnabled()"
-          [attr.aria-busy]="busy()"
-          [disabled]="busy()"
-          [style.background-color]="monitorEnabled() ? 'var(--app-accent)' : 'var(--app-switch-off)'"
-          (click)="toggleMonitor()"
+          class="rounded-lg bg-(--app-surface) px-2 py-1.5 text-left text-sm"
         >
-          <span
-            class="absolute top-0.5 left-0.5 size-5 rounded-full bg-(--app-knob) shadow transition-transform"
-            [class.translate-x-4]="monitorEnabled()"
-          ></span>
+          监视器
         </button>
-      </li>
+      </nav>
 
-      <li
-        class="flex items-center justify-between gap-4 rounded-xl bg-(--app-surface) px-3.5 py-3 ring-1 ring-(--app-border)"
-        [class.opacity-70]="!screenshotAvailable()"
-      >
-        <div class="min-w-0">
-          <div class="text-sm font-semibold tracking-tight">截图</div>
-          <div class="min-h-4 text-xs text-(--app-muted)">即将推出</div>
-        </div>
-        <button
-          type="button"
-          class="relative h-6 w-10 shrink-0 cursor-not-allowed rounded-full bg-(--app-switch-off) transition-colors"
-          role="switch"
-          aria-checked="false"
-          disabled
-        >
-          <span
-            class="absolute top-0.5 left-0.5 size-5 rounded-full bg-(--app-knob) shadow transition-transform"
-          ></span>
-        </button>
-      </li>
+      <section class="min-w-0 flex-1 overflow-y-auto p-4" aria-live="polite">
+        <app-monitor-settings />
+      </section>
+    </div>
 
-      <li
-        class="flex items-center justify-between gap-4 rounded-xl bg-(--app-surface) px-3.5 py-3 ring-1 ring-(--app-border)"
-        [class.opacity-70]="!clipboardAvailable()"
+    <footer class="flex shrink-0 items-center justify-end gap-3 border-t border-(--app-border) px-5 py-3">
+      <button
+        type="button"
+        class="rounded border border-(--app-border) bg-(--app-surface) px-3 py-1.5 text-sm text-(--app-muted) hover:bg-(--app-surface-hover) hover:text-(--app-fg) disabled:cursor-not-allowed disabled:opacity-50"
+        [disabled]="!appSettings.dirty() || appSettings.saving()"
+        (click)="appSettings.restore()"
       >
-        <div class="min-w-0">
-          <div class="text-sm font-semibold tracking-tight">剪切板历史</div>
-          <div class="min-h-4 text-xs text-(--app-muted)">即将推出</div>
-        </div>
-        <button
-          type="button"
-          class="relative h-6 w-10 shrink-0 cursor-not-allowed rounded-full bg-(--app-switch-off) transition-colors"
-          role="switch"
-          aria-checked="false"
-          disabled
-        >
-          <span
-            class="absolute top-0.5 left-0.5 size-5 rounded-full bg-(--app-knob) shadow transition-transform"
-          ></span>
-        </button>
-      </li>
-    </ul>
+        还原
+      </button>
+      <button
+        type="button"
+        class="rounded border border-(--app-border) bg-(--app-surface) px-3 py-1.5 text-sm hover:bg-(--app-surface-hover) disabled:cursor-not-allowed disabled:opacity-50"
+        [disabled]="!appSettings.dirty() || appSettings.saving()"
+        (click)="appSettings.save()"
+      >
+        保存
+      </button>
+    </footer>
   } @else {
-    <p class="text-sm text-(--app-muted)">加载中…</p>
+    <p class="px-5 text-sm text-(--app-muted)">加载中…</p>
   }
 </main>

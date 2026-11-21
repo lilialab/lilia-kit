@@ -7,8 +7,8 @@
       {
         "label": "main",
         "title": "LiliaKit Dev",
-        "width": 360,
-        "height": 440,
+        "width": 560,
+        "height": 400,
         "resizable": true,
         "decorations": true,
         "transparent": false,

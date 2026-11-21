@@ -6,6 +6,8 @@ use tauri::{
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
 };
 
+use crate::window_labels;
+
 const MENU_TOGGLE: &str = "toggle";
 const MENU_QUIT: &str = "quit";
 
@@ -55,7 +57,7 @@ pub fn setup<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
 
 /// 显示并聚焦主窗（二次启动 / 托盘找回）。
 pub fn show_main_window<R: Runtime>(app: &AppHandle<R>) {
-    if let Some(window) = app.get_webview_window("main") {
+    if let Some(window) = app.get_webview_window(window_labels::MAIN) {
         let _ = window.unminimize();
         let _ = window.show();
         let _ = window.set_focus();
@@ -63,7 +65,7 @@ pub fn show_main_window<R: Runtime>(app: &AppHandle<R>) {
 }
 
 fn toggle_main_window<R: Runtime>(app: &AppHandle<R>) {
-    let Some(window) = app.get_webview_window("main") else {
+    let Some(window) = app.get_webview_window(window_labels::MAIN) else {
         return;
     };
     match window.is_visible() {

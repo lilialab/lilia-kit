@@ -4,7 +4,6 @@ use std::time::Instant;
 
 use serde::Serialize;
 use sysinfo::{Components, CpuRefreshKind, MemoryRefreshKind, Networks, RefreshKind, System};
-use tauri::State;
 
 /// 整机监视快照。
 #[derive(Debug, Clone, Serialize)]
@@ -45,6 +44,20 @@ impl MetricsState {
             inner: std::sync::Mutex::new(None),
         }
     }
+
+    /// 刷新并返回当前快照。
+    pub fn snapshot(&self) -> Result<SystemMetrics, String> {
+        let mut guard = self
+            .inner
+            .lock()
+            .map_err(|_| "metrics lock poisoned".to_string())?;
+
+        if guard.is_none() {
+            *guard = Some(MetricsInner::new());
+        }
+        let inner = guard.as_mut().expect("metrics inner just initialized");
+        Ok(inner.refresh())
+    }
 }
 
 impl MetricsInner {
@@ -70,53 +83,41 @@ impl MetricsInner {
             last_instant: Instant::now(),
         }
     }
-}
 
-/// 刷新并返回 CPU / 内存 / 合计网速 / 温度。
-#[tauri::command]
-pub fn get_system_metrics(state: State<'_, MetricsState>) -> Result<SystemMetrics, String> {
-    let mut guard = state
-        .inner
-        .lock()
-        .map_err(|_| "metrics lock poisoned".to_string())?;
+    fn refresh(&mut self) -> SystemMetrics {
+        let elapsed = self.last_instant.elapsed().as_secs_f64().max(0.001);
+        self.last_instant = Instant::now();
 
-    if guard.is_none() {
-        *guard = Some(MetricsInner::new());
-    }
-    let inner = guard.as_mut().expect("metrics inner just initialized");
+        self.system.refresh_cpu_usage();
+        self.system.refresh_memory();
+        self.networks.refresh(true);
+        self.components.refresh(true);
 
-    let elapsed = inner.last_instant.elapsed().as_secs_f64().max(0.001);
-    inner.last_instant = Instant::now();
+        let mut network_rx = 0u64;
+        let mut network_tx = 0u64;
+        for (_name, data) in self.networks.iter() {
+            network_rx += data.received();
+            network_tx += data.transmitted();
+        }
 
-    inner.system.refresh_cpu_usage();
-    inner.system.refresh_memory();
-    inner.networks.refresh(true);
-    inner.components.refresh(true);
-
-    let mut network_rx = 0u64;
-    let mut network_tx = 0u64;
-    for (_name, data) in inner.networks.iter() {
-        network_rx += data.received();
-        network_tx += data.transmitted();
-    }
-
-    let temperatures = inner
-        .components
-        .iter()
-        .filter_map(|component| {
-            component.temperature().map(|celsius| TemperatureMetric {
-                label: component.label().to_string(),
-                celsius,
+        let temperatures = self
+            .components
+            .iter()
+            .filter_map(|component| {
+                component.temperature().map(|celsius| TemperatureMetric {
+                    label: component.label().to_string(),
+                    celsius,
+                })
             })
-        })
-        .collect::<Vec<_>>();
+            .collect();
 
-    Ok(SystemMetrics {
-        cpu_percent: inner.system.global_cpu_usage(),
-        memory_used_bytes: inner.system.used_memory(),
-        memory_total_bytes: inner.system.total_memory(),
-        network_rx_bytes_per_sec: network_rx as f64 / elapsed,
-        network_tx_bytes_per_sec: network_tx as f64 / elapsed,
-        temperatures,
-    })
+        SystemMetrics {
+            cpu_percent: self.system.global_cpu_usage(),
+            memory_used_bytes: self.system.used_memory(),
+            memory_total_bytes: self.system.total_memory(),
+            network_rx_bytes_per_sec: network_rx as f64 / elapsed,
+            network_tx_bytes_per_sec: network_tx as f64 / elapsed,
+            temperatures,
+        }
+    }
 }

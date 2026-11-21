@@ -1,18 +1,19 @@
 //! LiliaKit 桌面端：命令注册、托盘与多窗生命周期。
 
+mod commands;
 mod hotkeys;
 mod metrics;
-mod settings;
 mod tools;
 mod tray;
 mod window_chrome;
+mod window_labels;
 
-use metrics::{MetricsState, get_system_metrics};
-use settings::{default_app_settings, load_app_settings, save_app_settings};
+use commands::metrics::get_system_metrics;
+use commands::settings::{default_app_settings, load_app_settings, read_app_settings};
+use metrics::MetricsState;
 use tauri::Manager;
-use tools::{
-    MAIN_LABEL, MONITOR_LABEL, ToolsState, get_tools_state, open_enabled_tools, set_monitor_enabled,
-};
+use tools::{ToolId, ToolsState, open_enabled_tools, save_app_settings};
+use window_labels::{MAIN, MONITOR};
 
 /// 屏蔽 WebView 浏览器默认快捷键（Ctrl+P 等在 Win 上不会进到 JS）。
 fn prevent_default_plugin() -> tauri::plugin::TauriPlugin<tauri::Wry> {
@@ -33,6 +34,7 @@ fn prevent_default_plugin() -> tauri::plugin::TauriPlugin<tauri::Wry> {
     builder.build()
 }
 
+/// 启动 Tauri：托盘、设置、工具窗与全局快捷键。
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let mut builder = tauri::Builder::default();
@@ -62,23 +64,20 @@ pub fn run() {
         .manage(ToolsState::new(true))
         .invoke_handler(tauri::generate_handler![
             get_system_metrics,
-            get_tools_state,
-            set_monitor_enabled,
             load_app_settings,
             save_app_settings,
             default_app_settings,
         ])
         .on_window_event(|window, event| match event {
             tauri::WindowEvent::CloseRequested { api, .. } => {
-                if window.label() == MAIN_LABEL {
+                if window.label() == MAIN {
                     // 主窗 X → 进托盘；真正退出走托盘「退出」
                     api.prevent_close();
                     let _ = window.hide();
                 }
-                // 工具窗允许关闭（销毁）；开关由 Destroyed 回写
             }
             tauri::WindowEvent::Destroyed => {
-                if window.label() == MONITOR_LABEL {
+                if window.label() == MONITOR {
                     let app = window.app_handle().clone();
                     if let Some(state) = app.try_state::<ToolsState>() {
                         tools::on_monitor_destroyed(&app, state.inner());
@@ -93,12 +92,13 @@ pub fn run() {
                 app.set_activation_policy(tauri::ActivationPolicy::Accessory);
             }
 
-            // 启动时合并写回 settings.json，便于后续设置页直接改
-            let _ = settings::read_app_settings(app.handle());
+            let app_settings = read_app_settings(app.handle()).unwrap_or_default();
+            let tools = app.state::<ToolsState>();
+            tools.set_enabled_flag(ToolId::Monitor, app_settings.monitor.enabled);
 
             tray::setup(app.handle())?;
-            let tools = app.state::<ToolsState>();
-            open_enabled_tools(app.handle(), tools.inner())?;
+            open_enabled_tools(app.handle(), tools.inner())
+                .map_err(std::io::Error::other)?;
 
             #[cfg(desktop)]
             hotkeys::setup(app.handle());
