@@ -24,6 +24,8 @@ export class MonitorNetTemp {
 
   readonly rxLabel = computed(() => formatRate(this.rxBytesPerSec()));
   readonly txLabel = computed(() => formatRate(this.txBytesPerSec()));
+  readonly rxMega = computed(() => isMegaRate(this.rxBytesPerSec()));
+  readonly txMega = computed(() => isMegaRate(this.txBytesPerSec()));
 
   readonly hottest = computed(() => {
     let best: TemperatureMetric | null = null;
@@ -49,12 +51,19 @@ export class MonitorNetTemp {
   });
 }
 
+const MEGA_BYTES_PER_SEC = 1024 ** 2;
+
 function formatRate(bytesPerSec: number): string {
-  if (bytesPerSec >= 1024 ** 2) {
-    return `${(bytesPerSec / (1024 ** 2)).toFixed(1)}M`;
+  if (bytesPerSec >= MEGA_BYTES_PER_SEC) {
+    return `${(bytesPerSec / MEGA_BYTES_PER_SEC).toFixed(1)}M`;
   }
   if (bytesPerSec >= 1024) {
     return `${(bytesPerSec / 1024).toFixed(0)}K`;
   }
   return `${bytesPerSec.toFixed(0)}B`;
+}
+
+/** ≥1M/s（上下行同一规则） */
+function isMegaRate(bytesPerSec: number): boolean {
+  return bytesPerSec >= MEGA_BYTES_PER_SEC;
 }

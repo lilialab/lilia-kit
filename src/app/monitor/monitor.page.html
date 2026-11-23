@@ -6,25 +6,30 @@
   <div class="absolute inset-0 z-10" data-tauri-drag-region></div>
 
   @if (error(); as message) {
-    <p class="relative m-0 truncate text-[0.7rem] text-(--app-danger)" role="alert">{{ message }}</p>
+  <p
+    class="relative m-0 truncate text-[0.7rem] text-(--app-danger)"
+    role="alert"
+  >
+    {{ message }}
+  </p>
   } @else if (metrics(); as m) {
-    <section class="relative flex flex-col gap-2" aria-live="polite">
-      <app-monitor-metric-bar [percent]="m.cpuPercent">
-        <svg lucideCpu [size]="iconSize" [strokeWidth]="2"></svg>
-      </app-monitor-metric-bar>
+  <section class="relative flex flex-col gap-2" aria-live="polite">
+    <app-monitor-metric-bar [percent]="m.cpuPercent">
+      <svg lucideCpu [size]="iconSize" [strokeWidth]="2"></svg>
+    </app-monitor-metric-bar>
 
-      <app-monitor-metric-bar [percent]="memoryPercent(m)">
-        <svg lucideMemoryStick [size]="iconSize" [strokeWidth]="2"></svg>
-      </app-monitor-metric-bar>
+    <app-monitor-metric-bar [percent]="memoryPercent(m)">
+      <svg lucideMemoryStick [size]="iconSize" [strokeWidth]="2"></svg>
+    </app-monitor-metric-bar>
 
-      <app-monitor-net-temp
-        [rxBytesPerSec]="m.networkRxBytesPerSec"
-        [txBytesPerSec]="m.networkTxBytesPerSec"
-        [temperatures]="m.temperatures"
-        [showTemperature]="showTemperature()"
-      />
-    </section>
+    <app-monitor-net-temp
+      [rxBytesPerSec]="m.networkRxBytesPerSec"
+      [txBytesPerSec]="m.networkTxBytesPerSec"
+      [temperatures]="m.temperatures"
+      [showTemperature]="showTemperature()"
+    />
+  </section>
   } @else {
-    <p class="relative m-0 text-[0.7rem] text-(--app-muted)">读取中…</p>
+  <p class="relative m-0 text-[0.7rem] text-(--app-muted)">读取中…</p>
   }
 </main>

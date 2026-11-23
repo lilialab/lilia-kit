@@ -7,11 +7,17 @@
       [strokeWidth]="2"
     ></svg>
     <p class="m-0 flex min-w-0 items-center gap-2">
-      <span class="inline-flex items-center gap-0.5">
+      <span
+        class="inline-flex items-center gap-0.5 transition-colors duration-200 ease-out"
+        [class.text-(--app-net-mega)]="rxMega()"
+      >
         <svg lucideArrowDown [size]="rateIconSize" [strokeWidth]="2"></svg>
         {{ rxLabel() }}
       </span>
-      <span class="inline-flex items-center gap-0.5">
+      <span
+        class="inline-flex items-center gap-0.5 transition-colors duration-200 ease-out"
+        [class.text-(--app-net-mega)]="txMega()"
+      >
         <svg lucideArrowUp [size]="rateIconSize" [strokeWidth]="2"></svg>
         {{ txLabel() }}
       </span>

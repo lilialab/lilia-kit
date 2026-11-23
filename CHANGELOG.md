@@ -11,7 +11,8 @@
 - 去掉工具 `available` 占位与 `tools-changed`；侧栏只列已实现工具
 - Rust 结构：`commands/{settings,metrics}` 管 IPC；`window_labels` 集中窗名；`tools/monitor` 管监视窗；前端 `lib/tauri/settings`
 - 监视浮窗改为紧凑长条（CPU/内存进度条 + 网速/最高温并排，Lucide 图标）；固定约 220×78，不可拉伸/最大化
-- 指标负荷五档色（idle/ok/busy/hot/critical），利用率与温度分阈值表
+- 指标负荷四档色（idle/ok/busy/critical → green/teal/peach/red）；利用率阈值 50/70/90，温度 60/70/90
+- 网速 ≥1M/s 用 sapphire 提示色（上下行同规则；B/K 仍 muted，非告警）
 - 全局快捷键 Win+Alt+.（Mac：⌘+⌥+.）：已启用时切换监视器显隐；注册失败不阻断启动；后续截图快捷键同此模块
 - 监视器显隐：热键只发 `monitor-toggle`；前端淡入淡出后再 `set_monitor_window_visible`（对齐系统 hide/show 不对称）
 - 监视器快切开/关：串行销毁/重建，避免 `failed to acquire webview reference`
@@ -27,7 +28,7 @@
 - 窗口外观：mac 系统 vibrancy+radius + 淡 tint；Windows 全程无毛玻璃、CSS 约 95% 实底；去掉 CSS 圆角与 backdrop-filter
 - 系统托盘：显示/隐藏、退出；主窗 X 进托盘；mac 用 Accessory 去掉 Dock 常驻
 - 接入 Tailwind CSS v4（`@tailwindcss/postcss` + `.postcssrc.json`）
-- 主题：Catppuccin Macchiato（`@catppuccin/palette`）+ `--app-*` 语义变量
+- 主题：Catppuccin Mocha（`@catppuccin/palette`）+ `--app-*` 语义变量
 
 ## [0.1.0] — 2026-11-18
 

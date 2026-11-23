@@ -10,14 +10,15 @@
   --app-surface: var(--ctp-surface0);
   --app-surface-hover: var(--ctp-surface1);
   --app-link: var(--ctp-blue);
-  /* 指标五档：idle → ok → busy → hot → critical */
+  /* 指标四档：idle → ok → busy → critical（绿→青→桃→红） */
   --app-tone-idle: var(--ctp-green);
   --app-tone-ok: var(--ctp-teal);
-  --app-tone-busy: var(--ctp-yellow);
-  --app-tone-hot: var(--ctp-peach);
+  --app-tone-busy: var(--ctp-peach);
   --app-tone-critical: var(--ctp-red);
   --app-warn: var(--app-tone-busy);
   --app-danger: var(--app-tone-critical);
+  /* 网速 ≥1M/s 提示色（吞吐活跃，非告警） */
+  --app-net-mega: var(--ctp-sapphire);
   --monitor-fade-ms: 180ms;
 }
 
