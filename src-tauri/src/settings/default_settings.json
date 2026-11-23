@@ -1,4 +1,7 @@
 {
+  "general": {
+    "appearance": "system"
+  },
   "monitor": {
     "enabled": true,
     "pinned": true,

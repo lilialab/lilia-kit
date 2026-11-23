@@ -21,7 +21,7 @@ pnpm tauri build  # 打安装包
 - `pnpm format` — dprint
 - `pnpm lint` — ESLint
 - `pnpm start` — 仅前端（给 `tauri dev` 的 beforeDevCommand 用，不是产品运行方式）
-- 样式：Tailwind v4 + Catppuccin Mocha（`src/theme/`，语义色 `--app-*`）
+- 样式：Tailwind v4 + Catppuccin（`data-theme`=`latte`|`mocha`；语义色 `--app-*`）
 
 推送 `v*` tag 后由 [`.github/workflows/release.yml`](.github/workflows/release.yml) 打多平台 Draft Release。变更记在 [`CHANGELOG.md`](CHANGELOG.md)。
 

@@ -22,7 +22,7 @@ pub fn setup<R: Runtime>(app: &AppHandle<R>) {
         monitor_visibility,
         |app, _shortcut, event| {
             if event.state == ShortcutState::Pressed {
-                tools::emit_monitor_toggle(app);
+                tools::monitor::emit_toggle(app);
             }
         },
     ) {

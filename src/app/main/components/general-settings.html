@@ -1,0 +1,28 @@
+@if (appSettings.draft(); as settings) {
+  <h2 class="text-sm font-medium">通用</h2>
+  <p class="mt-1 text-xs text-(--app-muted)">应用外观等</p>
+
+  <fieldset class="mt-4 m-0 min-w-0 border-0 p-0">
+    <legend class="mb-2 px-0 text-sm">外观</legend>
+    <div class="flex flex-col gap-3">
+      @for (option of appearanceOptions; track option.value) {
+        <label class="flex cursor-pointer items-start gap-2 text-sm">
+          <input
+            type="radio"
+            class="mt-0.5"
+            name="appearance"
+            [value]="option.value"
+            [checked]="settings.general.appearance === option.value"
+            [disabled]="appSettings.saving()"
+            (change)="onAppearanceChange(option.value)"
+          />
+          <span class="min-w-0">
+            <span class="block">{{ option.label }}</span>
+            <span class="mt-0.5 block text-xs text-(--app-muted)">{{ option.hint }}</span>
+          </span>
+        </label>
+      }
+    </div>
+  </fieldset>
+  <p class="mt-3 text-xs text-(--app-muted)">保存后生效</p>
+}

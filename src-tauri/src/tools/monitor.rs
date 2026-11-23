@@ -4,14 +4,33 @@
 
 use std::time::Duration;
 
-use tauri::{AppHandle, Emitter, Manager, Runtime, WebviewUrl, WebviewWindowBuilder};
+use tauri::{AppHandle, Emitter, Manager, Runtime, State, WebviewUrl, WebviewWindowBuilder};
 
-use crate::commands::settings;
+use crate::settings;
+use crate::settings::model::MonitorSettings;
+use crate::shell::{window_chrome, window_labels};
 use crate::tools::ToolsState;
-use crate::window_chrome;
-use crate::window_labels;
 
 const EVENT_MONITOR_TOGGLE: &str = "monitor-toggle";
+
+/// 按已保存的监视器设置对齐运行态（启用 / 置顶）。
+pub fn apply_from_settings<R: Runtime>(
+    app: &AppHandle<R>,
+    state: &ToolsState,
+    monitor: &MonitorSettings,
+) -> Result<(), String> {
+    if monitor.enabled != state.monitor_enabled() {
+        set_enabled(app, state, monitor.enabled)?;
+    }
+
+    if let Some(window) = app.get_webview_window(window_labels::MONITOR) {
+        window
+            .set_always_on_top(monitor.pinned)
+            .map_err(|err| err.to_string())?;
+    }
+
+    Ok(())
+}
 
 /// 按启用状态装载或卸载浮窗（持有 lifecycle 锁）。
 pub fn set_enabled<R: Runtime>(
@@ -51,7 +70,16 @@ pub fn emit_toggle<R: Runtime>(app: &AppHandle<R>) {
 }
 
 /// 前端请求的 OS 显隐（show 可补建窗；hide 仅隐藏）。
-pub fn set_window_visible<R: Runtime>(
+#[tauri::command]
+pub async fn set_monitor_window_visible(
+    app: AppHandle,
+    state: State<'_, ToolsState>,
+    visible: bool,
+) -> Result<(), String> {
+    set_window_visible(&app, &state, visible)
+}
+
+fn set_window_visible<R: Runtime>(
     app: &AppHandle<R>,
     state: &ToolsState,
     visible: bool,
@@ -93,7 +121,7 @@ pub fn on_destroyed<R: Runtime>(app: &AppHandle<R>, state: &ToolsState) {
         return;
     }
     next.monitor.enabled = false;
-    let _ = crate::tools::apply_app_settings(app, state, &next);
+    let _ = crate::settings::apply_app_settings(app, state, &next);
 }
 
 fn open<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {

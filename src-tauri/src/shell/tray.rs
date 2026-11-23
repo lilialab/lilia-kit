@@ -6,7 +6,7 @@ use tauri::{
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
 };
 
-use crate::window_labels;
+use super::window_labels;
 
 const MENU_TOGGLE: &str = "toggle";
 const MENU_QUIT: &str = "quit";

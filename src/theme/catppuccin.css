@@ -1,7 +1,10 @@
-/* 固定 Catppuccin Mocha；--ctp-* 供语义层引用 */
+/* Catppuccin → --ctp-*；由 data-theme 主题名切换（latte / mocha） */
 @import "@catppuccin/palette/css/catppuccin.css";
 
-:root {
+/* 默认 mocha；Rust 对齐前未写 data-theme 时保持夜间 */
+:root,
+:root[data-theme="mocha"] {
+  color-scheme: dark;
   --ctp-rosewater: var(--ctp-mocha-rosewater);
   --ctp-flamingo: var(--ctp-mocha-flamingo);
   --ctp-pink: var(--ctp-mocha-pink);
@@ -28,4 +31,34 @@
   --ctp-base: var(--ctp-mocha-base);
   --ctp-mantle: var(--ctp-mocha-mantle);
   --ctp-crust: var(--ctp-mocha-crust);
+}
+
+:root[data-theme="latte"] {
+  color-scheme: light;
+  --ctp-rosewater: var(--ctp-latte-rosewater);
+  --ctp-flamingo: var(--ctp-latte-flamingo);
+  --ctp-pink: var(--ctp-latte-pink);
+  --ctp-mauve: var(--ctp-latte-mauve);
+  --ctp-red: var(--ctp-latte-red);
+  --ctp-maroon: var(--ctp-latte-maroon);
+  --ctp-peach: var(--ctp-latte-peach);
+  --ctp-yellow: var(--ctp-latte-yellow);
+  --ctp-green: var(--ctp-latte-green);
+  --ctp-teal: var(--ctp-latte-teal);
+  --ctp-sky: var(--ctp-latte-sky);
+  --ctp-sapphire: var(--ctp-latte-sapphire);
+  --ctp-blue: var(--ctp-latte-blue);
+  --ctp-lavender: var(--ctp-latte-lavender);
+  --ctp-text: var(--ctp-latte-text);
+  --ctp-subtext1: var(--ctp-latte-subtext1);
+  --ctp-subtext0: var(--ctp-latte-subtext0);
+  --ctp-overlay2: var(--ctp-latte-overlay2);
+  --ctp-overlay1: var(--ctp-latte-overlay1);
+  --ctp-overlay0: var(--ctp-latte-overlay0);
+  --ctp-surface2: var(--ctp-latte-surface2);
+  --ctp-surface1: var(--ctp-latte-surface1);
+  --ctp-surface0: var(--ctp-latte-surface0);
+  --ctp-base: var(--ctp-latte-base);
+  --ctp-mantle: var(--ctp-latte-mantle);
+  --ctp-crust: var(--ctp-latte-crust);
 }

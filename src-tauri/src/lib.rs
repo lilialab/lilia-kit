@@ -1,21 +1,19 @@
 //! LiliaKit 桌面端：命令注册、托盘与多窗生命周期。
 
-mod commands;
-mod hotkeys;
 mod metrics;
+mod settings;
+mod shell;
 mod tools;
-mod tray;
-mod window_chrome;
-mod window_labels;
 
-use commands::metrics::get_system_metrics;
-use commands::settings::{default_app_settings, load_app_settings, read_app_settings};
-use metrics::MetricsState;
-use tauri::Manager;
-use tools::{
-    ToolId, ToolsState, open_enabled_tools, save_app_settings, set_monitor_window_visible,
+use metrics::{MetricsState, get_system_metrics};
+use settings::{
+    apply_runtime_from_settings, default_app_settings, get_resolved_app_theme, load_app_settings,
+    on_os_theme_changed, read_app_settings, save_app_settings,
 };
-use window_labels::{MAIN, MONITOR};
+use shell::window_labels::{MAIN, MONITOR};
+use tauri::Manager;
+use tools::monitor::set_monitor_window_visible;
+use tools::ToolsState;
 
 /// 屏蔽 WebView 浏览器默认快捷键（Ctrl+P 等在 Win 上不会进到 JS）。
 fn prevent_default_plugin() -> tauri::plugin::TauriPlugin<tauri::Wry> {
@@ -47,7 +45,7 @@ pub fn run() {
 
         builder = builder
             .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
-                tray::show_main_window(app);
+                shell::tray::show_main_window(app);
             }))
             .plugin(tauri_plugin_global_shortcut::Builder::new().build())
             .plugin(
@@ -62,14 +60,15 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(prevent_default_plugin())
         .manage(MetricsState::new())
-        // 默认打开监视器，保留原先「一开就有浮窗」的体验
-        .manage(ToolsState::new(true))
+        // 冷启动未对齐；setup 里按 settings apply 后再开窗
+        .manage(ToolsState::new(false))
         .invoke_handler(tauri::generate_handler![
             get_system_metrics,
             load_app_settings,
             save_app_settings,
             default_app_settings,
             set_monitor_window_visible,
+            get_resolved_app_theme,
         ])
         .on_window_event(|window, event| match event {
             tauri::WindowEvent::CloseRequested { api, .. } => {
@@ -83,8 +82,14 @@ pub fn run() {
                 if window.label() == MONITOR {
                     let app = window.app_handle().clone();
                     if let Some(state) = app.try_state::<ToolsState>() {
-                        tools::on_monitor_destroyed(&app, state.inner());
+                        tools::monitor::on_destroyed(&app, state.inner());
                     }
+                }
+            }
+            // 只跟主窗，避免多窗重复 emit；窗 theme 为 None 时才会收到
+            tauri::WindowEvent::ThemeChanged(theme) => {
+                if window.label() == MAIN {
+                    on_os_theme_changed(window.app_handle(), *theme);
                 }
             }
             _ => {}
@@ -97,14 +102,14 @@ pub fn run() {
 
             let app_settings = read_app_settings(app.handle()).unwrap_or_default();
             let tools = app.state::<ToolsState>();
-            tools.set_enabled_flag(ToolId::Monitor, app_settings.monitor.enabled);
 
-            tray::setup(app.handle())?;
-            open_enabled_tools(app.handle(), tools.inner())
-                .map_err(std::io::Error::other)?;
+            shell::tray::setup(app.handle())?;
 
             #[cfg(desktop)]
-            hotkeys::setup(app.handle());
+            shell::hotkeys::setup(app.handle());
+
+            apply_runtime_from_settings(app.handle(), tools.inner(), &app_settings)
+                .map_err(std::io::Error::other)?;
 
             Ok(())
         })

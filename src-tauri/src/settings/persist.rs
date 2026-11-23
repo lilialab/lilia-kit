@@ -1,40 +1,15 @@
-//! 应用设置：配置目录 `settings.json`（字段缺省与默认深合并）。
+//! 设置持久化：`settings.json` 读写与缺省深合并。
 
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tauri::{AppHandle, Emitter, Manager, Runtime};
 
+use super::model::AppSettings;
+
 const SETTINGS_FILE: &str = "settings.json";
 const EVENT_APP_SETTINGS_CHANGED: &str = "app-settings-changed";
-
-/// 监视器工具偏好。
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct MonitorSettings {
-    /// 是否启用（保存后装载/卸载浮窗）
-    pub enabled: bool,
-    /// 是否置顶（开窗时应用；设置页可改）
-    pub pinned: bool,
-    /// 是否显示温度
-    pub show_temperature: bool,
-}
-
-/// 应用偏好设置（按工具分组）。
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct AppSettings {
-    pub monitor: MonitorSettings,
-}
-
-impl Default for AppSettings {
-    fn default() -> Self {
-        serde_json::from_str(include_str!("default_settings.json"))
-            .expect("default_settings.json must deserialize to AppSettings")
-    }
-}
 
 fn settings_path<R: Runtime>(app: &AppHandle<R>) -> Result<PathBuf, String> {
     let dir = app
@@ -108,19 +83,20 @@ pub fn emit_app_settings_changed<R: Runtime>(app: &AppHandle<R>, settings: &AppS
 
 /// 读取应用设置（给前端）。
 #[tauri::command]
-pub(crate) fn load_app_settings(app: AppHandle) -> Result<AppSettings, String> {
+pub fn load_app_settings(app: AppHandle) -> Result<AppSettings, String> {
     read_app_settings(&app)
 }
 
 /// 内置默认设置，不读写磁盘。
 #[tauri::command]
-pub(crate) fn default_app_settings() -> AppSettings {
+pub fn default_app_settings() -> AppSettings {
     AppSettings::default()
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{parse_settings_json, AppSettings};
+    use super::parse_settings_json;
+    use crate::settings::model::{AppearancePreference, AppSettings};
 
     #[test]
     fn deep_merges_partial_monitor() {
@@ -145,6 +121,7 @@ mod tests {
     #[test]
     fn default_matches_embedded() {
         let defaults = AppSettings::default();
+        assert_eq!(defaults.general.appearance, AppearancePreference::System);
         assert!(defaults.monitor.enabled);
         assert!(defaults.monitor.pinned);
         assert!(defaults.monitor.show_temperature);
@@ -156,5 +133,28 @@ mod tests {
             parse_settings_json(r#"{"monitor":{"pinned":false}}"#).expect("parse");
         assert!(partial.monitor.enabled);
         assert!(!partial.monitor.pinned);
+    }
+
+    #[test]
+    fn missing_general_defaults_appearance_to_system() {
+        let partial =
+            parse_settings_json(r#"{"monitor":{"pinned":false}}"#).expect("parse");
+        assert_eq!(partial.general.appearance, AppearancePreference::System);
+    }
+
+    #[test]
+    fn empty_general_object_keeps_appearance_default() {
+        let partial = parse_settings_json(r#"{"general":{}}"#).expect("parse");
+        assert_eq!(partial.general.appearance, AppearancePreference::System);
+    }
+
+    #[test]
+    fn parses_appearance_theme_names() {
+        let latte =
+            parse_settings_json(r#"{"general":{"appearance":"latte"}}"#).expect("parse");
+        assert_eq!(latte.general.appearance, AppearancePreference::Latte);
+        let mocha =
+            parse_settings_json(r#"{"general":{"appearance":"mocha"}}"#).expect("parse");
+        assert_eq!(mocha.general.appearance, AppearancePreference::Mocha);
     }
 }

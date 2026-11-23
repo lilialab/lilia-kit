@@ -4,7 +4,7 @@ import type { AppSettings } from '../types/appSettings';
 
 /**
  * 主窗设置会话：草稿 ↔ 已保存，还原 / 保存。
- * 写盘与启用/置顶等副作用在 Rust；外部变更回推完整 settings。
+ * 写盘与启用/置顶/主题等副作用在 Rust；换肤由 `app-theme-changed` 驱动。
  * 由 `MainPage` `providers` 提供，勿挂 root。
  */
 @Injectable()
