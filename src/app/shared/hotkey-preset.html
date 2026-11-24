@@ -1,0 +1,15 @@
+<select
+  class="min-w-40 rounded border border-(--app-border) bg-(--app-surface) px-2 py-1.5 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+  aria-label="快捷键预设"
+  [ngModel]="value()"
+  [disabled]="disabled()"
+  (ngModelChange)="onValueChange($event)"
+>
+  <option value="">无</option>
+  @if (orphanAccel(); as orphan) {
+    <option [value]="orphan">{{ labelFor(orphan) }}（当前）</option>
+  }
+  @for (accel of presets(); track accel) {
+    <option [value]="accel">{{ labelFor(accel) }}</option>
+  }
+</select>

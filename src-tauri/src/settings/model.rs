@@ -28,6 +28,8 @@ pub struct MonitorSettings {
     pub pinned: bool,
     /// 是否显示温度
     pub show_temperature: bool,
+    /// 显隐全局快捷键 accel；空字符串 = 未绑定
+    pub visibility_hotkey: String,
 }
 
 /// 应用偏好设置（按分组：通用 + 各工具）。

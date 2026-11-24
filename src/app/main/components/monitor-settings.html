@@ -5,9 +5,9 @@
   <label class="mt-4 flex items-center gap-2 text-sm">
     <input
       type="checkbox"
-      [checked]="settings.monitor.enabled"
+      [ngModel]="settings.monitor.enabled"
       [disabled]="appSettings.saving()"
-      (change)="onCheck('enabled', $event)"
+      (ngModelChange)="onCheck('enabled', $event)"
     />
     启用
   </label>
@@ -16,9 +16,9 @@
   <label class="mt-4 flex items-center gap-2 text-sm">
     <input
       type="checkbox"
-      [checked]="settings.monitor.pinned"
+      [ngModel]="settings.monitor.pinned"
       [disabled]="appSettings.saving()"
-      (change)="onCheck('pinned', $event)"
+      (ngModelChange)="onCheck('pinned', $event)"
     />
     窗口置顶
   </label>
@@ -27,11 +27,21 @@
   <label class="mt-4 flex items-center gap-2 text-sm">
     <input
       type="checkbox"
-      [checked]="settings.monitor.showTemperature"
+      [ngModel]="settings.monitor.showTemperature"
       [disabled]="appSettings.saving()"
-      (change)="onCheck('showTemperature', $event)"
+      (ngModelChange)="onCheck('showTemperature', $event)"
     />
     显示温度
   </label>
   <p class="mt-2 text-xs text-(--app-muted)">浮窗右下角显示最高温度</p>
+
+  <div class="mt-4">
+    <p class="mb-2 text-sm">显隐快捷键</p>
+    <app-hotkey-preset
+      [value]="settings.monitor.visibilityHotkey"
+      [disabled]="appSettings.saving()"
+      (valueChange)="onVisibilityHotkeyChange($event)"
+    />
+    <p class="mt-2 text-xs text-(--app-muted)">保存后生效；被占用时可换一条；选「无」则关闭全局热键</p>
+  </div>
 }

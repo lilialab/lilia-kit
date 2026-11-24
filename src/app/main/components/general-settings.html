@@ -12,9 +12,9 @@
             class="mt-0.5"
             name="appearance"
             [value]="option.value"
-            [checked]="settings.general.appearance === option.value"
+            [ngModel]="settings.general.appearance"
             [disabled]="appSettings.saving()"
-            (change)="onAppearanceChange(option.value)"
+            (ngModelChange)="onAppearanceChange($event)"
           />
           <span class="min-w-0">
             <span class="block">{{ option.label }}</span>

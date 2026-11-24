@@ -47,7 +47,7 @@
     <footer class="flex shrink-0 items-center justify-end gap-3 border-t border-(--app-border) px-5 py-3">
       <button
         type="button"
-        class="rounded border border-(--app-border) bg-(--app-surface) px-3 py-1.5 text-sm text-(--app-muted) hover:bg-(--app-surface-hover) hover:text-(--app-fg) disabled:cursor-not-allowed disabled:opacity-50"
+        class="rounded border border-(--app-border) bg-(--app-surface) px-3 py-1.5 text-sm text-(--app-muted) enabled:hover:bg-(--app-surface-hover) enabled:hover:text-(--app-fg) disabled:cursor-not-allowed disabled:opacity-50"
         [disabled]="!appSettings.dirty() || appSettings.saving()"
         (click)="appSettings.restore()"
       >
@@ -55,7 +55,7 @@
       </button>
       <button
         type="button"
-        class="rounded border border-(--app-border) bg-(--app-surface) px-3 py-1.5 text-sm hover:bg-(--app-surface-hover) disabled:cursor-not-allowed disabled:opacity-50"
+        class="rounded border border-(--app-border) bg-(--app-surface) px-3 py-1.5 text-sm enabled:hover:bg-(--app-surface-hover) disabled:cursor-not-allowed disabled:opacity-50"
         [disabled]="!appSettings.dirty() || appSettings.saving()"
         (click)="appSettings.save()"
       >

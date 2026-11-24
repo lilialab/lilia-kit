@@ -5,6 +5,7 @@
   "monitor": {
     "enabled": true,
     "pinned": true,
-    "showTemperature": true
+    "showTemperature": true,
+    "visibilityHotkey": "Control+Shift+M"
   }
 }

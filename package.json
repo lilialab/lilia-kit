@@ -9,7 +9,7 @@
     "watch": "ng build --watch --configuration development",
     "format": "dprint fmt",
     "lint": "eslint .",
-    "test": "node --experimental-strip-types --test tests/**/*.test.ts",
+    "test": "tsx --test tests/**/*.test.ts",
     "tauri": "node scripts/tauri.mjs"
   },
   "dependencies": {
@@ -21,6 +21,7 @@
     "@angular/router": "^22.0.1",
     "@catppuccin/palette": "^1.8.0",
     "@lucide/angular": "^1.75.0",
+    "@ngrx/signals": "^22.0.1",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-global-shortcut": "~2.4.1",
     "@tauri-apps/plugin-opener": "^2",
@@ -43,6 +44,7 @@
     "eslint-plugin-unicorn": "^80.0.0",
     "postcss": "^8.5.33",
     "tailwindcss": "^4.3.5",
+    "tsx": "^4.23.15",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.73.0"
   }

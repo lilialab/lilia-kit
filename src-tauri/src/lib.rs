@@ -15,6 +15,9 @@ use tauri::Manager;
 use tools::monitor::set_monitor_window_visible;
 use tools::ToolsState;
 
+#[cfg(desktop)]
+use shell::hotkeys::HotkeysState;
+
 /// 屏蔽 WebView 浏览器默认快捷键（Ctrl+P 等在 Win 上不会进到 JS）。
 fn prevent_default_plugin() -> tauri::plugin::TauriPlugin<tauri::Wry> {
     use tauri_plugin_prevent_default::Flags;
@@ -53,7 +56,8 @@ pub fn run() {
                     // 只记位置/尺寸；可见性由工具开关管，避免和主窗托盘显隐打架
                     .with_state_flags(StateFlags::POSITION | StateFlags::SIZE)
                     .build(),
-            );
+            )
+            .manage(HotkeysState::new());
     }
 
     builder
@@ -104,9 +108,6 @@ pub fn run() {
             let tools = app.state::<ToolsState>();
 
             shell::tray::setup(app.handle())?;
-
-            #[cfg(desktop)]
-            shell::hotkeys::setup(app.handle());
 
             apply_runtime_from_settings(app.handle(), tools.inner(), &app_settings)
                 .map_err(std::io::Error::other)?;

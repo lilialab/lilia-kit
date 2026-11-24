@@ -104,6 +104,7 @@ mod tests {
             parse_settings_json(r#"{"monitor":{"pinned":false}}"#).expect("parse");
         assert!(!partial.monitor.pinned);
         assert!(partial.monitor.show_temperature);
+        assert_eq!(partial.monitor.visibility_hotkey, "Control+Shift+M");
     }
 
     #[test]
@@ -111,6 +112,14 @@ mod tests {
         let partial = parse_settings_json(r#"{"monitor":{}}"#).expect("parse");
         assert!(partial.monitor.pinned);
         assert!(partial.monitor.show_temperature);
+        assert_eq!(partial.monitor.visibility_hotkey, "Control+Shift+M");
+    }
+
+    #[test]
+    fn empty_visibility_hotkey_means_unbound() {
+        let partial = parse_settings_json(r#"{"monitor":{"visibilityHotkey":""}}"#)
+            .expect("parse");
+        assert_eq!(partial.monitor.visibility_hotkey, "");
     }
 
     #[test]
@@ -125,6 +134,7 @@ mod tests {
         assert!(defaults.monitor.enabled);
         assert!(defaults.monitor.pinned);
         assert!(defaults.monitor.show_temperature);
+        assert_eq!(defaults.monitor.visibility_hotkey, "Control+Shift+M");
     }
 
     #[test]

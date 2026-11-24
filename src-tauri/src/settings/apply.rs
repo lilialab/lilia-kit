@@ -1,4 +1,4 @@
-//! 已保存 settings 的统一 apply：写盘 → 按域分发 → 通知。
+//! 已保存 settings 的统一 apply：试运行态 → 写盘 → 分发 → 通知。
 
 use tauri::{AppHandle, Runtime, State};
 
@@ -20,12 +20,19 @@ pub async fn save_app_settings(
     Ok(settings)
 }
 
-/// 对齐一份完整 settings：先持久化，再分发各域，最后通知前端。
+/// 对齐一份完整 settings：热键等可失败步骤先试，成功后再落盘与分发。
 pub fn apply_app_settings<R: Runtime>(
     app: &AppHandle<R>,
     state: &ToolsState,
     settings: &AppSettings,
 ) -> Result<(), String> {
+    #[cfg(desktop)]
+    crate::shell::hotkeys::apply_from_settings(
+        app,
+        settings,
+        crate::shell::hotkeys::ApplyMode::Strict,
+    )?;
+
     persist::write_app_settings(app, settings)?;
     apply_runtime_from_settings(app, state, settings)?;
     persist::emit_app_settings_changed(app, settings);
@@ -33,12 +40,22 @@ pub fn apply_app_settings<R: Runtime>(
 }
 
 /// 仅对齐运行态（不写盘、不 emit settings）：启动与保存共用。
+///
+/// 保存路径里热键已在写盘前 Strict 对齐，此处桌面热键用 Soft 以幂等跳过。
 pub fn apply_runtime_from_settings<R: Runtime>(
     app: &AppHandle<R>,
     state: &ToolsState,
     settings: &AppSettings,
 ) -> Result<(), String> {
     tools::apply_from_settings(app, state, settings)?;
+
+    #[cfg(desktop)]
+    crate::shell::hotkeys::apply_from_settings(
+        app,
+        settings,
+        crate::shell::hotkeys::ApplyMode::Soft,
+    )?;
+
     appearance::apply_from_settings(app, settings);
     Ok(())
 }
