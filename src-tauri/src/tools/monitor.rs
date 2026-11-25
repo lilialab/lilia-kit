@@ -4,7 +4,7 @@
 
 use std::time::Duration;
 
-use tauri::{AppHandle, Emitter, Manager, Runtime, State, WebviewUrl, WebviewWindowBuilder};
+use tauri::{AppHandle, Emitter, Manager, Runtime, WebviewUrl, WebviewWindowBuilder};
 
 use crate::settings;
 use crate::settings::model::MonitorSettings;
@@ -70,16 +70,7 @@ pub fn emit_toggle<R: Runtime>(app: &AppHandle<R>) {
 }
 
 /// 前端请求的 OS 显隐（show 可补建窗；hide 仅隐藏）。
-#[tauri::command]
-pub async fn set_monitor_window_visible(
-    app: AppHandle,
-    state: State<'_, ToolsState>,
-    visible: bool,
-) -> Result<(), String> {
-    set_window_visible(&app, &state, visible)
-}
-
-fn set_window_visible<R: Runtime>(
+pub(crate) fn set_window_visible<R: Runtime>(
     app: &AppHandle<R>,
     state: &ToolsState,
     visible: bool,
@@ -140,7 +131,7 @@ fn open<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
         .map(|s| s.monitor.pinned)
         .unwrap_or(true);
 
-    let mut builder = WebviewWindowBuilder::new(
+    let builder = WebviewWindowBuilder::new(
         app,
         window_labels::MONITOR,
         WebviewUrl::App("index.html".into()),
@@ -157,9 +148,7 @@ fn open<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
     .visible(true);
 
     #[cfg(windows)]
-    {
-        builder = builder.drag_and_drop(false).no_redirection_bitmap(true);
-    }
+    let builder = builder.drag_and_drop(false).no_redirection_bitmap(true);
 
     let window = builder.build()?;
 

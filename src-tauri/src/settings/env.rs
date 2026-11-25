@@ -52,13 +52,6 @@ pub fn on_os_theme_changed<R: Runtime>(app: &AppHandle<R>, system: Theme) {
     let _ = push(app, env);
 }
 
-/// 启动对齐：当前已保存偏好下的 resolved 快照。
-#[tauri::command]
-pub fn get_resolved_app_env(app: AppHandle) -> Result<ResolvedAppEnv, String> {
-    let settings = persist::read_app_settings(&app)?;
-    Ok(resolve_from_settings(&app, &settings))
-}
-
 fn push<R: Runtime>(app: &AppHandle<R>, env: ResolvedAppEnv) -> Result<(), String> {
     tray::apply_locale(app, env.locale)?;
     let _ = app.emit(EVENT_APP_ENV_CHANGED, env);

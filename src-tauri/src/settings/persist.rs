@@ -81,18 +81,6 @@ pub fn emit_app_settings_changed<R: Runtime>(app: &AppHandle<R>, settings: &AppS
     let _ = app.emit(EVENT_APP_SETTINGS_CHANGED, settings);
 }
 
-/// 读取应用设置（给前端）。
-#[tauri::command]
-pub fn load_app_settings(app: AppHandle) -> Result<AppSettings, String> {
-    read_app_settings(&app)
-}
-
-/// 内置默认设置，不读写磁盘。
-#[tauri::command]
-pub fn default_app_settings() -> AppSettings {
-    AppSettings::default()
-}
-
 #[cfg(test)]
 mod tests {
     use super::parse_settings_json;

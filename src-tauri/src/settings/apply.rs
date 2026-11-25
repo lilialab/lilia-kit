@@ -1,23 +1,10 @@
 //! 已保存 settings 的统一 apply：试运行态 → 写盘 → 分发 → 通知。
 
-use tauri::{AppHandle, Runtime, State};
+use tauri::{AppHandle, Runtime};
 
 use super::model::AppSettings;
 use super::persist;
 use crate::tools::{self, ToolsState};
-
-/// 保存应用设置：落盘并 apply 运行态，回推完整文档。
-///
-/// `async`：避免在同步 command 里建窗与主事件循环死锁。
-#[tauri::command]
-pub async fn save_app_settings(
-    app: AppHandle,
-    state: State<'_, ToolsState>,
-    settings: AppSettings,
-) -> Result<AppSettings, String> {
-    apply_app_settings(&app, &state, &settings)?;
-    Ok(settings)
-}
 
 /// 对齐一份完整 settings：热键等可失败步骤先试，成功后再落盘与分发。
 pub fn apply_app_settings<R: Runtime>(
