@@ -140,7 +140,7 @@ fn open<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
         .map(|s| s.monitor.pinned)
         .unwrap_or(true);
 
-    let window = WebviewWindowBuilder::new(
+    let mut builder = WebviewWindowBuilder::new(
         app,
         window_labels::MONITOR,
         WebviewUrl::App("index.html".into()),
@@ -154,10 +154,14 @@ fn open<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
     .always_on_top(pinned)
     .skip_taskbar(true)
     .shadow(false)
-    .drag_and_drop(false)
-    .no_redirection_bitmap(true)
-    .visible(true)
-    .build()?;
+    .visible(true);
+
+    #[cfg(windows)]
+    {
+        builder = builder.drag_and_drop(false).no_redirection_bitmap(true);
+    }
+
+    let window = builder.build()?;
 
     window_chrome::apply_to(&window);
     Ok(())

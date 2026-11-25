@@ -3,8 +3,10 @@
 use tauri::{
     AppHandle, Manager, Runtime,
     menu::{Menu, MenuItem},
-    tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
+    tray::TrayIconBuilder,
 };
+#[cfg(not(target_os = "macos"))]
+use tauri::tray::{MouseButton, MouseButtonState, TrayIconEvent};
 
 use super::window_labels;
 use crate::settings::model::AppLocale;
