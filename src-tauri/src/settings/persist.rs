@@ -104,7 +104,7 @@ mod tests {
             parse_settings_json(r#"{"monitor":{"pinned":false}}"#).expect("parse");
         assert!(!partial.monitor.pinned);
         assert!(partial.monitor.show_temperature);
-        assert_eq!(partial.monitor.visibility_hotkey, "Control+Shift+M");
+        assert_eq!(partial.monitor.visibility_hotkey, "Control+Alt+M");
     }
 
     #[test]
@@ -112,7 +112,7 @@ mod tests {
         let partial = parse_settings_json(r#"{"monitor":{}}"#).expect("parse");
         assert!(partial.monitor.pinned);
         assert!(partial.monitor.show_temperature);
-        assert_eq!(partial.monitor.visibility_hotkey, "Control+Shift+M");
+        assert_eq!(partial.monitor.visibility_hotkey, "Control+Alt+M");
     }
 
     #[test]
@@ -131,10 +131,11 @@ mod tests {
     fn default_matches_embedded() {
         let defaults = AppSettings::default();
         assert_eq!(defaults.general.appearance, AppearancePreference::System);
+        assert!(!defaults.general.launch_at_login);
         assert!(defaults.monitor.enabled);
         assert!(defaults.monitor.pinned);
         assert!(defaults.monitor.show_temperature);
-        assert_eq!(defaults.monitor.visibility_hotkey, "Control+Shift+M");
+        assert_eq!(defaults.monitor.visibility_hotkey, "Control+Alt+M");
     }
 
     #[test]
@@ -156,6 +157,7 @@ mod tests {
     fn empty_general_object_keeps_appearance_default() {
         let partial = parse_settings_json(r#"{"general":{}}"#).expect("parse");
         assert_eq!(partial.general.appearance, AppearancePreference::System);
+        assert!(!partial.general.launch_at_login);
     }
 
     #[test]

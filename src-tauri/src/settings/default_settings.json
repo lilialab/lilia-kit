@@ -1,11 +1,12 @@
 {
   "general": {
-    "appearance": "system"
+    "appearance": "system",
+    "launchAtLogin": false
   },
   "monitor": {
     "enabled": true,
     "pinned": true,
     "showTemperature": true,
-    "visibilityHotkey": "Control+Shift+M"
+    "visibilityHotkey": "Control+Alt+M"
   }
 }

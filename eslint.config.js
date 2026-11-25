@@ -9,11 +9,11 @@ const eslintPluginUnicorn = require('eslint-plugin-unicorn').default;
 module.exports = defineConfig([
   globalIgnores([
     'dist/**',
+    'out-tsc/**',
     'src-tauri/**',
     'node_modules/**',
     '.angular/**',
     '.scratch/**',
-    'old/**',
   ]),
   {
     files: ['**/*.ts'],

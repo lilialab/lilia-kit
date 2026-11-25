@@ -4,7 +4,7 @@ import {
   metricToneCss,
   temperatureTone,
   utilizationTone,
-} from '../../../src/app/utils/metric-tone.ts';
+} from '../../../src/app/utils/metric-tone';
 
 describe('utilizationTone', () => {
   it('maps percent bands', () => {

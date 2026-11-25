@@ -4,12 +4,12 @@ import {
   DEFAULT_MONITOR_VISIBILITY_HOTKEY,
   formatAccelDisplay,
   HOTKEY_PRESETS,
-} from '../../../src/app/shared/hotkey-format.ts';
-import { AppPlatform } from '../../../src/app/types/appSettings.ts';
+} from '../../../src/app/shared/hotkey-format';
+import { AppPlatform } from '../../../src/app/types/appSettings';
 
 describe('HOTKEY_PRESETS', () => {
   it('includes default monitor visibility hotkey', () => {
-    assert.equal(DEFAULT_MONITOR_VISIBILITY_HOTKEY, 'Control+Shift+M');
+    assert.equal(DEFAULT_MONITOR_VISIBILITY_HOTKEY, 'Control+Alt+M');
     assert.ok(HOTKEY_PRESETS.includes(DEFAULT_MONITOR_VISIBILITY_HOTKEY));
   });
 });
@@ -17,12 +17,12 @@ describe('HOTKEY_PRESETS', () => {
 describe('formatAccelDisplay', () => {
   it('formats win and mac', () => {
     assert.equal(
-      formatAccelDisplay('Control+Shift+M', AppPlatform.Win),
-      'Ctrl+Shift+M',
+      formatAccelDisplay('Control+Alt+M', AppPlatform.Win),
+      'Ctrl+Alt+M',
     );
     assert.equal(
-      formatAccelDisplay('Control+Shift+M', AppPlatform.Mac),
-      '⌃⇧M',
+      formatAccelDisplay('Control+Alt+M', AppPlatform.Mac),
+      '⌃⌥M',
     );
     assert.equal(
       formatAccelDisplay('Control+Shift+Period', AppPlatform.Win),

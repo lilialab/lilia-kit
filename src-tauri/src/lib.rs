@@ -52,6 +52,11 @@ pub fn run() {
             }))
             .plugin(tauri_plugin_global_shortcut::Builder::new().build())
             .plugin(
+                tauri_plugin_autostart::Builder::new()
+                    .args([shell::autostart::STARTUP_ARG])
+                    .build(),
+            )
+            .plugin(
                 tauri_plugin_window_state::Builder::new()
                     // 只记位置/尺寸；可见性由工具开关管，避免和主窗托盘显隐打架
                     .with_state_flags(StateFlags::POSITION | StateFlags::SIZE)
@@ -111,6 +116,12 @@ pub fn run() {
 
             apply_runtime_from_settings(app.handle(), tools.inner(), &app_settings)
                 .map_err(std::io::Error::other)?;
+
+            // 主窗默认 conf 里 visible:false；普通启动再显示，`--startup` 静默留托盘
+            #[cfg(desktop)]
+            if !shell::autostart::launched_from_startup() {
+                shell::tray::show_main_window(app.handle());
+            }
 
             Ok(())
         })

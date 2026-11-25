@@ -4,16 +4,16 @@ import { AppPlatform } from '../types/appSettings';
 
 /** 监视器显隐等可复用的候选（不含空；空 =「无」） */
 export const HOTKEY_PRESETS = [
+  'Control+Alt+M',
   'Control+Shift+M',
   'Alt+Shift+M',
-  'Control+Alt+M',
   'Control+Shift+Period',
 ] as const;
 
 export type HotkeyPresetId = (typeof HOTKEY_PRESETS)[number];
 
 /** 监视器显隐默认 accel（与 `default_settings.json` 一致） */
-export const DEFAULT_MONITOR_VISIBILITY_HOTKEY: HotkeyPresetId = 'Control+Shift+M';
+export const DEFAULT_MONITOR_VISIBILITY_HOTKEY: HotkeyPresetId = 'Control+Alt+M';
 
 /** 平台可读文案；空 accel 返回空串 */
 export function formatAccelDisplay(accel: string, platform: AppPlatform): string {

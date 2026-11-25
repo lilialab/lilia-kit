@@ -16,6 +16,8 @@ pub enum AppearancePreference {
 #[serde(rename_all = "camelCase")]
 pub struct GeneralSettings {
     pub appearance: AppearancePreference,
+    /// 登录时启动；自启进程带 `--startup`，主窗静默进托盘
+    pub launch_at_login: bool,
 }
 
 /// 监视器工具偏好。

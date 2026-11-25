@@ -30,6 +30,8 @@ export type AppearancePreference = (typeof Appearance)[keyof typeof Appearance];
 export interface GeneralSettings {
   /** 跟随系统 / Latte / Mocha */
   appearance: AppearancePreference;
+  /** 登录时启动；自启时主窗静默进托盘 */
+  launchAtLogin: boolean;
 }
 
 /** 监视器工具偏好 */

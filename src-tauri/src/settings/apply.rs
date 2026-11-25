@@ -33,6 +33,13 @@ pub fn apply_app_settings<R: Runtime>(
         crate::shell::hotkeys::ApplyMode::Strict,
     )?;
 
+    #[cfg(desktop)]
+    crate::shell::autostart::apply_launch_at_login(
+        app,
+        settings.general.launch_at_login,
+        crate::shell::autostart::ApplyMode::Strict,
+    )?;
+
     persist::write_app_settings(app, settings)?;
     apply_runtime_from_settings(app, state, settings)?;
     persist::emit_app_settings_changed(app, settings);
@@ -54,6 +61,13 @@ pub fn apply_runtime_from_settings<R: Runtime>(
         app,
         settings,
         crate::shell::hotkeys::ApplyMode::Soft,
+    )?;
+
+    #[cfg(desktop)]
+    crate::shell::autostart::apply_launch_at_login(
+        app,
+        settings.general.launch_at_login,
+        crate::shell::autostart::ApplyMode::Soft,
     )?;
 
     appearance::apply_from_settings(app, settings);

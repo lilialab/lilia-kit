@@ -27,4 +27,8 @@ export class GeneralSettingsPanel {
   onAppearanceChange(value: AppearancePreference): void {
     this.appSettings.patchTool('general', 'appearance', value);
   }
+
+  onLaunchAtLoginChange(value: boolean): void {
+    this.appSettings.patchTool('general', 'launchAtLogin', value);
+  }
 }
