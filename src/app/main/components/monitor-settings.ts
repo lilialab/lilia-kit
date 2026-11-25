@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { HotkeyPreset } from '../../shared/hotkey-preset';
 import { AppSettingsStore } from '../app-settings.store';
 
@@ -7,7 +8,7 @@ import { AppSettingsStore } from '../app-settings.store';
 @Component({
   selector: 'app-monitor-settings',
   templateUrl: './monitor-settings.html',
-  imports: [FormsModule, HotkeyPreset],
+  imports: [FormsModule, HotkeyPreset, TranslocoPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MonitorSettingsPanel {

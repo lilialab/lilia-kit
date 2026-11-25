@@ -1,34 +1,79 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Appearance, type AppearancePreference } from '../../types/appSettings';
+import { TranslocoPipe } from '@jsverse/transloco';
+import {
+  Appearance,
+  type AppearancePreference,
+  LocalePreference,
+  type LocalePreference as LocalePreferenceId,
+} from '../../types/appSettings';
 import { AppSettingsStore } from '../app-settings.store';
 
-const APPEARANCE_OPTIONS: { value: AppearancePreference; label: string; hint: string }[] = [
+const LOCALE_OPTIONS: {
+  value: LocalePreferenceId;
+  labelKey: string;
+  hintKey: string;
+}[] = [
+  {
+    value: LocalePreference.System,
+    labelKey: 'general.locale.system',
+    hintKey: 'general.locale.systemHint',
+  },
+  {
+    value: LocalePreference.Zh,
+    labelKey: 'general.locale.zh',
+    hintKey: 'general.locale.zhHint',
+  },
+  {
+    value: LocalePreference.En,
+    labelKey: 'general.locale.en',
+    hintKey: 'general.locale.enHint',
+  },
+];
+
+const APPEARANCE_OPTIONS: {
+  value: AppearancePreference;
+  labelKey: string;
+  hintKey: string;
+}[] = [
   {
     value: Appearance.System,
-    label: '跟随系统',
-    hint: '浅色 → Latte，深色 → Mocha',
+    labelKey: 'general.appearance.system',
+    hintKey: 'general.appearance.systemHint',
   },
-  { value: Appearance.Latte, label: 'Latte', hint: '浅色主题' },
-  { value: Appearance.Mocha, label: 'Mocha', hint: '深色主题' },
+  {
+    value: Appearance.Latte,
+    labelKey: 'general.appearance.latte',
+    hintKey: 'general.appearance.latteHint',
+  },
+  {
+    value: Appearance.Mocha,
+    labelKey: 'general.appearance.mocha',
+    hintKey: 'general.appearance.mochaHint',
+  },
 ];
 
 /** 主窗右侧：通用设置 */
 @Component({
   selector: 'app-general-settings',
   templateUrl: './general-settings.html',
-  imports: [FormsModule],
+  imports: [FormsModule, TranslocoPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GeneralSettingsPanel {
   readonly appSettings = inject(AppSettingsStore);
+  readonly localeOptions = LOCALE_OPTIONS;
   readonly appearanceOptions = APPEARANCE_OPTIONS;
-
-  onAppearanceChange(value: AppearancePreference): void {
-    this.appSettings.patchTool('general', 'appearance', value);
-  }
 
   onLaunchAtLoginChange(value: boolean): void {
     this.appSettings.patchTool('general', 'launchAtLogin', value);
+  }
+
+  onLocaleChange(value: LocalePreferenceId): void {
+    this.appSettings.patchTool('general', 'locale', value);
+  }
+
+  onAppearanceChange(value: AppearancePreference): void {
+    this.appSettings.patchTool('general', 'appearance', value);
   }
 }

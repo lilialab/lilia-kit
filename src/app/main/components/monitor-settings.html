@@ -1,6 +1,6 @@
 @if (appSettings.draft(); as settings) {
-  <h2 class="text-sm font-medium">监视器</h2>
-  <p class="mt-1 text-xs text-(--app-muted)">系统资源浮窗</p>
+  <h2 class="text-sm font-medium">{{ 'main.section.monitor' | transloco }}</h2>
+  <p class="mt-1 text-xs text-(--app-muted)">{{ 'monitor.blurb' | transloco }}</p>
 
   <label class="mt-4 flex items-center gap-2 text-sm">
     <input
@@ -9,9 +9,9 @@
       [disabled]="appSettings.saving()"
       (ngModelChange)="onCheck('enabled', $event)"
     />
-    启用
+    {{ 'monitor.enabled' | transloco }}
   </label>
-  <p class="mt-2 text-xs text-(--app-muted)">打开系统资源浮窗</p>
+  <p class="mt-2 text-xs text-(--app-muted)">{{ 'monitor.enabledHint' | transloco }}</p>
 
   <label class="mt-4 flex items-center gap-2 text-sm">
     <input
@@ -20,9 +20,9 @@
       [disabled]="appSettings.saving()"
       (ngModelChange)="onCheck('pinned', $event)"
     />
-    窗口置顶
+    {{ 'monitor.pinned' | transloco }}
   </label>
-  <p class="mt-2 text-xs text-(--app-muted)">浮在其他窗口之上</p>
+  <p class="mt-2 text-xs text-(--app-muted)">{{ 'monitor.pinnedHint' | transloco }}</p>
 
   <label class="mt-4 flex items-center gap-2 text-sm">
     <input
@@ -31,17 +31,17 @@
       [disabled]="appSettings.saving()"
       (ngModelChange)="onCheck('showTemperature', $event)"
     />
-    显示温度
+    {{ 'monitor.showTemperature' | transloco }}
   </label>
-  <p class="mt-2 text-xs text-(--app-muted)">浮窗右下角显示最高温度</p>
+  <p class="mt-2 text-xs text-(--app-muted)">{{ 'monitor.showTemperatureHint' | transloco }}</p>
 
   <div class="mt-4">
-    <p class="mb-2 text-sm">显隐快捷键</p>
+    <p class="mb-2 text-sm">{{ 'monitor.hotkey' | transloco }}</p>
     <app-hotkey-preset
       [value]="settings.monitor.visibilityHotkey"
       [disabled]="appSettings.saving()"
       (valueChange)="onVisibilityHotkeyChange($event)"
     />
-    <p class="mt-2 text-xs text-(--app-muted)">保存后生效；被占用时可换一条；选「无」则关闭全局热键</p>
+    <p class="mt-2 text-xs text-(--app-muted)">{{ 'monitor.hotkeyHint' | transloco }}</p>
   </div>
 }

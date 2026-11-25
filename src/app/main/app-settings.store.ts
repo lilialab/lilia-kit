@@ -20,7 +20,7 @@ interface SettingsSessionState {
 
 /**
  * 主窗设置会话：草稿 ↔ 已保存，还原 / 保存。
- * 写盘与启用/置顶/主题等副作用在 Rust；换肤由 `app-theme-changed` 驱动。
+ * 写盘与启用/置顶等副作用在 Rust；壳层主题/语言由 `app-env-changed` 驱动。
  * 由 `MainPage` `providers` 提供，勿挂 root。
  */
 export const AppSettingsStore = signalStore(

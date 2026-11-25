@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { AppEnv } from '../app-env';
 import { formatAccelDisplay, HOTKEY_PRESETS } from './hotkey-format';
 
@@ -7,12 +8,12 @@ import { formatAccelDisplay, HOTKEY_PRESETS } from './hotkey-format';
 @Component({
   selector: 'app-hotkey-preset',
   templateUrl: './hotkey-preset.html',
-  imports: [FormsModule],
+  imports: [FormsModule, TranslocoPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
 })
 export class HotkeyPreset {
-  private readonly appEnv = inject(AppEnv);
+  private readonly env = inject(AppEnv);
 
   /** 当前 accel；空 = 未绑定 */
   readonly value = input('');
@@ -31,7 +32,7 @@ export class HotkeyPreset {
   });
 
   labelFor(accel: string): string {
-    return formatAccelDisplay(accel, this.appEnv.platform()) || accel;
+    return formatAccelDisplay(accel, this.env.platform()) || accel;
   }
 
   onValueChange(accel: string): void {

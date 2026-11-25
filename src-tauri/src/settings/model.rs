@@ -11,11 +11,29 @@ pub enum AppearancePreference {
     Mocha,
 }
 
+/// 界面语言偏好：跟随系统，或固定中/英。
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum LocalePreference {
+    System,
+    Zh,
+    En,
+}
+
+/// 已解析的界面语言（无 system）。
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum AppLocale {
+    Zh,
+    En,
+}
+
 /// 通用设置分组（外观等；非工具运行态）。
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GeneralSettings {
     pub appearance: AppearancePreference,
+    pub locale: LocalePreference,
     /// 登录时启动；自启进程带 `--startup`，主窗静默进托盘
     pub launch_at_login: bool,
 }

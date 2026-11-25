@@ -1,13 +1,13 @@
 <select
   class="min-w-40 rounded border border-(--app-border) bg-(--app-surface) px-2 py-1.5 text-sm disabled:cursor-not-allowed disabled:opacity-50"
-  aria-label="快捷键预设"
+  [attr.aria-label]="'hotkey.aria' | transloco"
   [ngModel]="value()"
   [disabled]="disabled()"
   (ngModelChange)="onValueChange($event)"
 >
-  <option value="">无</option>
+  <option value="">{{ 'hotkey.none' | transloco }}</option>
   @if (orphanAccel(); as orphan) {
-    <option [value]="orphan">{{ labelFor(orphan) }}（当前）</option>
+    <option [value]="orphan">{{ labelFor(orphan) }}{{ 'hotkey.current' | transloco }}</option>
   }
   @for (accel of presets(); track accel) {
     <option [value]="accel">{{ labelFor(accel) }}</option>

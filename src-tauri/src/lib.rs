@@ -7,7 +7,7 @@ mod tools;
 
 use metrics::{MetricsState, get_system_metrics};
 use settings::{
-    apply_runtime_from_settings, default_app_settings, get_resolved_app_theme, load_app_settings,
+    apply_runtime_from_settings, default_app_settings, get_resolved_app_env, load_app_settings,
     on_os_theme_changed, read_app_settings, save_app_settings,
 };
 use shell::window_labels::{MAIN, MONITOR};
@@ -77,7 +77,7 @@ pub fn run() {
             save_app_settings,
             default_app_settings,
             set_monitor_window_visible,
-            get_resolved_app_theme,
+            get_resolved_app_env,
         ])
         .on_window_event(|window, event| match event {
             tauri::WindowEvent::CloseRequested { api, .. } => {

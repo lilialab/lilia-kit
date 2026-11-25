@@ -5,8 +5,9 @@
   "compilerOptions": {
     "composite": true,
     "outDir": "./out-tsc/app",
-    "types": []
+    "types": [],
+    "resolveJsonModule": true
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "src/app/i18n/locales/*.json"],
   "exclude": ["src/**/*.spec.ts"]
 }

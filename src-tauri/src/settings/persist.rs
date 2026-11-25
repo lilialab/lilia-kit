@@ -131,6 +131,7 @@ mod tests {
     fn default_matches_embedded() {
         let defaults = AppSettings::default();
         assert_eq!(defaults.general.appearance, AppearancePreference::System);
+        assert_eq!(defaults.general.locale, crate::settings::model::LocalePreference::System);
         assert!(!defaults.general.launch_at_login);
         assert!(defaults.monitor.enabled);
         assert!(defaults.monitor.pinned);
@@ -157,6 +158,10 @@ mod tests {
     fn empty_general_object_keeps_appearance_default() {
         let partial = parse_settings_json(r#"{"general":{}}"#).expect("parse");
         assert_eq!(partial.general.appearance, AppearancePreference::System);
+        assert_eq!(
+            partial.general.locale,
+            crate::settings::model::LocalePreference::System
+        );
         assert!(!partial.general.launch_at_login);
     }
 

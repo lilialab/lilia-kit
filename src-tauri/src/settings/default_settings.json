@@ -1,6 +1,7 @@
 {
   "general": {
     "appearance": "system",
+    "locale": "system",
     "launchAtLogin": false
   },
   "monitor": {

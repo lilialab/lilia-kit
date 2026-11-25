@@ -1,13 +1,10 @@
-//! 外观解析：偏好 + OS → 主题名；原生窗框 `set_theme`；emit；OS 变化时仅 `system` 再推送。
+//! 外观解析：偏好 + OS → 主题名；原生窗框 `set_theme`。
 
 use serde::{Deserialize, Serialize};
-use tauri::{AppHandle, Emitter, Manager, Runtime, Theme};
+use tauri::{AppHandle, Manager, Runtime, Theme};
 
-use super::model::{AppearancePreference, AppSettings};
-use super::persist;
+use super::model::AppearancePreference;
 use crate::shell::window_labels;
-
-const EVENT_APP_THEME_CHANGED: &str = "app-theme-changed";
 
 /// 已解析的 Catppuccin 主题名（与前端 `data-theme` 一致）。
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -44,7 +41,7 @@ fn preference_to_window_theme(appearance: AppearancePreference) -> Option<Theme>
 }
 
 /// 同步原生窗框/标题栏主题（平台能力范围内；监视窗无边框时影响有限）。
-fn apply_native_window_theme<R: Runtime>(app: &AppHandle<R>, appearance: AppearancePreference) {
+pub fn apply_native_window_theme<R: Runtime>(app: &AppHandle<R>, appearance: AppearancePreference) {
     let theme = preference_to_window_theme(appearance);
     for window in app.webview_windows().into_values() {
         let _ = window.set_theme(theme);
@@ -56,37 +53,6 @@ pub fn read_system_theme<R: Runtime>(app: &AppHandle<R>) -> Theme {
     app.get_webview_window(window_labels::MAIN)
         .and_then(|window| window.theme().ok())
         .unwrap_or(Theme::Dark)
-}
-
-/// 按已保存 settings：先对齐原生窗框，再解析并广播主题名。
-pub fn apply_from_settings<R: Runtime>(app: &AppHandle<R>, settings: &AppSettings) {
-    let appearance = settings.general.appearance;
-    // 固定→跟随 时须先清强制主题，再读 OS
-    apply_native_window_theme(app, appearance);
-    let theme = resolve(appearance, read_system_theme(app));
-    emit_theme_changed(app, theme);
-}
-
-/// OS 外观变化：仅当偏好为 `system` 时再解析并广播（原生已跟随，无需再 `set_theme`）。
-pub fn on_os_theme_changed<R: Runtime>(app: &AppHandle<R>, system: Theme) {
-    let Ok(settings) = persist::read_app_settings(app) else {
-        return;
-    };
-    if settings.general.appearance != AppearancePreference::System {
-        return;
-    }
-    emit_theme_changed(app, theme_from_os(system));
-}
-
-fn emit_theme_changed<R: Runtime>(app: &AppHandle<R>, theme: AppThemeName) {
-    let _ = app.emit(EVENT_APP_THEME_CHANGED, theme);
-}
-
-/// 当前已保存偏好下的解析主题（给前端启动对齐）。
-#[tauri::command]
-pub fn get_resolved_app_theme(app: AppHandle) -> Result<AppThemeName, String> {
-    let settings = persist::read_app_settings(&app)?;
-    Ok(resolve(settings.general.appearance, read_system_theme(&app)))
 }
 
 #[cfg(test)]

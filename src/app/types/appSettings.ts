@@ -26,10 +26,27 @@ export const Appearance = {
 } as const;
 export type AppearancePreference = (typeof Appearance)[keyof typeof Appearance];
 
+/** 界面语言偏好：跟随系统，或固定中/英 */
+export const LocalePreference = {
+  System: 'system',
+  Zh: 'zh',
+  En: 'en',
+} as const;
+export type LocalePreference = (typeof LocalePreference)[keyof typeof LocalePreference];
+
+/** 已解析的界面语言（无 system） */
+export const AppLocale = {
+  Zh: 'zh',
+  En: 'en',
+} as const;
+export type AppLocale = (typeof AppLocale)[keyof typeof AppLocale];
+
 /** 通用设置分组 */
 export interface GeneralSettings {
   /** 跟随系统 / Latte / Mocha */
   appearance: AppearancePreference;
+  /** 跟随系统 / 中文 / English */
+  locale: LocalePreference;
   /** 登录时启动；自启时主窗静默进托盘 */
   launchAtLogin: boolean;
 }

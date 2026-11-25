@@ -1,4 +1,5 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { LucideCpu, LucideMemoryStick } from '@lucide/angular';
 import type { SystemMetrics } from '../lib/tauri/metrics';
 import { getSystemMetrics } from '../lib/tauri/metrics';
@@ -14,7 +15,7 @@ const FADE_MS = 180;
 @Component({
   selector: 'app-monitor-page',
   templateUrl: './monitor.page.html',
-  imports: [MonitorMetricBar, MonitorNetTemp, LucideCpu, LucideMemoryStick],
+  imports: [MonitorMetricBar, MonitorNetTemp, LucideCpu, LucideMemoryStick, TranslocoPipe],
 })
 export class MonitorPage {
   private readonly destroyRef = inject(DestroyRef);

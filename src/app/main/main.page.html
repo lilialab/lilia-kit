@@ -1,7 +1,7 @@
 <main class="flex h-screen flex-col bg-(--app-bg) text-(--app-fg)">
   <header class="shrink-0 px-5 pt-5 pb-3">
     <h1 class="text-xl font-semibold tracking-tight">LiliaKit</h1>
-    <p class="mt-1 text-sm text-(--app-muted)">选择分组并配置</p>
+    <p class="mt-1 text-sm text-(--app-muted)">{{ 'main.subtitle' | transloco }}</p>
   </header>
 
   @if (appSettings.error(); as message) {
@@ -12,7 +12,7 @@
     <div class="flex min-h-0 flex-1 border-t border-(--app-border)">
       <nav
         class="flex w-44 shrink-0 flex-col gap-1 border-r border-(--app-border) p-2"
-        aria-label="设置分组"
+        [attr.aria-label]="'main.navAria' | transloco"
       >
         <button
           type="button"
@@ -20,7 +20,7 @@
           [class.bg-(--app-surface)]="section() === 'general'"
           (click)="selectSection('general')"
         >
-          通用
+          {{ 'main.section.general' | transloco }}
         </button>
         <button
           type="button"
@@ -28,7 +28,7 @@
           [class.bg-(--app-surface)]="section() === 'monitor'"
           (click)="selectSection('monitor')"
         >
-          监视器
+          {{ 'main.section.monitor' | transloco }}
         </button>
       </nav>
 
@@ -51,7 +51,7 @@
         [disabled]="!appSettings.dirty() || appSettings.saving()"
         (click)="appSettings.restore()"
       >
-        还原
+        {{ 'main.restore' | transloco }}
       </button>
       <button
         type="button"
@@ -59,10 +59,10 @@
         [disabled]="!appSettings.dirty() || appSettings.saving()"
         (click)="appSettings.save()"
       >
-        保存
+        {{ 'main.save' | transloco }}
       </button>
     </footer>
   } @else {
-    <p class="px-5 text-sm text-(--app-muted)">加载中…</p>
+    <p class="px-5 text-sm text-(--app-muted)">{{ 'main.loading' | transloco }}</p>
   }
 </main>

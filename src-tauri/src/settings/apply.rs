@@ -2,7 +2,6 @@
 
 use tauri::{AppHandle, Runtime, State};
 
-use super::appearance;
 use super::model::AppSettings;
 use super::persist;
 use crate::tools::{self, ToolsState};
@@ -70,6 +69,7 @@ pub fn apply_runtime_from_settings<R: Runtime>(
         crate::shell::autostart::ApplyMode::Soft,
     )?;
 
-    appearance::apply_from_settings(app, settings);
+    super::env::apply_from_settings(app, settings)?;
+
     Ok(())
 }
